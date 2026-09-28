@@ -185,6 +185,18 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
       }
     }
 
+    if (!mounted) return;
+    final settingsProvider = context.read<SettingsProvider>();
+    if (!settingsProvider.hasNotificationPermission &&
+        _notificationType != 'Silent popup') {
+      await settingsProvider.requestNotificationPermission();
+    }
+    if (!settingsProvider.hasExactAlarmPermission &&
+        _notificationType == 'Alarm-style reminder') {
+      await settingsProvider.requestExactAlarmPermission();
+    }
+
+    if (!mounted) return;
     bool success;
     if (isEditing) {
       success = await taskProvider.updateTask(task);

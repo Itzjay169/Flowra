@@ -89,9 +89,18 @@ class _TimetableScreenState extends State<TimetableScreen> {
           PermissionBanner(
             showNotificationWarning: !settings.hasNotificationPermission,
             showExactAlarmWarning: !settings.hasExactAlarmPermission,
-            onFixNotification: () =>
-                settings.requestNotificationPermission(),
-            onFixAlarm: () => settings.requestExactAlarmPermission(),
+            onFixNotification: () async {
+              final granted = await settings.requestNotificationPermission();
+              if (granted && context.mounted) {
+                await context.read<TaskProvider>().rescheduleAllNotifications();
+              }
+            },
+            onFixAlarm: () async {
+              final granted = await settings.requestExactAlarmPermission();
+              if (granted && context.mounted) {
+                await context.read<TaskProvider>().rescheduleAllNotifications();
+              }
+            },
           ),
 
           // Week day selector

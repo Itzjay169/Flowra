@@ -77,7 +77,7 @@ void main() {
       expect(find.textContaining('open-source'), findsNothing);
 
       // Support encouragement text
-      expect(find.text('If Flowra helps you, consider supporting its development ❤️'), findsOneWidget);
+      expect(find.text('If Flowra helps you, consider supporting its development by some donation'), findsOneWidget);
     });
   });
 }

@@ -1,6 +1,6 @@
 /// Notification service for scheduling study reminders.
 /// Handles Android notification channels, permissions, exact alarms,
-/// and boot-completed rescheduling.
+/// sound, vibration, and boot-completed rescheduling.
 library;
 
 import 'dart:io';
@@ -33,6 +33,12 @@ class NotificationService {
   bool get hasNotificationPermission => _hasNotificationPermission;
   bool get hasExactAlarmPermission => _hasExactAlarmPermission;
 
+  // Distinct vibration patterns
+  static final Int64List _reminderVibrationPattern =
+      Int64List.fromList([0, 500, 200, 500]);
+  static final Int64List _alarmVibrationPattern =
+      Int64List.fromList([0, 1000, 500, 1000, 500, 1000]);
+
   // Callback for when a notification action is tapped
   Function(String? payload)? onNotificationTap;
   Function(String actionId, String? payload)? onNotificationAction;
@@ -40,21 +46,32 @@ class NotificationService {
   Future<void> initialize() async {
     if (_initialized) return;
 
-    // Initialize timezone
+    // Initialize timezone database
     tz_data.initializeTimeZones();
     try {
       final timezoneName = await FlutterTimezone.getLocalTimezone();
       tz.setLocalLocation(tz.getLocation(timezoneName));
     } catch (e) {
-      debugPrint('Timezone error: $e');
-      tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
+      debugPrint('Timezone detection error: $e');
+      try {
+        final currentOffset = DateTime.now().timeZoneOffset.inMilliseconds;
+        final matched = tz.timeZoneDatabase.locations.values.firstWhere(
+          (loc) => loc.currentTimeZone.offset == currentOffset,
+          orElse: () => tz.getLocation('Asia/Kolkata'),
+        );
+        tz.setLocalLocation(matched);
+      } catch (_) {
+        try {
+          tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
+        } catch (_) {}
+      }
     }
 
     // Android settings
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // iOS/macOS settings (for future support)
+    // iOS/macOS settings
     const darwinSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -73,32 +90,49 @@ class NotificationService {
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
 
-    // Create Android notification channel
+    // Create Android notification channels
     if (Platform.isAndroid) {
-      await _createStudyAlertChannel();
+      await _createNotificationChannels();
     }
 
     _initialized = true;
     await checkPermissions();
   }
 
-  Future<void> _createStudyAlertChannel() async {
+  Future<void> _createNotificationChannels() async {
     final androidPlugin =
         _plugin.resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();
 
     if (androidPlugin != null) {
-      const channel = AndroidNotificationChannel(
+      // 1. Regular task reminders channel with sound and vibration
+      final reminderChannel = AndroidNotificationChannel(
         AppConstants.studyAlertChannelId,
         AppConstants.studyAlertChannelName,
         description: AppConstants.studyAlertChannelDesc,
         importance: Importance.max,
         playSound: true,
         enableVibration: true,
+        vibrationPattern: _reminderVibrationPattern,
         enableLights: true,
         showBadge: true,
       );
-      await androidPlugin.createNotificationChannel(channel);
+      await androidPlugin.createNotificationChannel(reminderChannel);
+
+      // 2. High priority alarm reminders channel with alarm audio stream & vibration
+      final alarmChannel = AndroidNotificationChannel(
+        AppConstants.alarmAlertChannelId,
+        AppConstants.alarmAlertChannelName,
+        description: AppConstants.alarmAlertChannelDesc,
+        importance: Importance.max,
+        playSound: true,
+        enableVibration: true,
+        vibrationPattern: _alarmVibrationPattern,
+        audioAttributesUsage: AudioAttributesUsage.alarm,
+        enableLights: true,
+        showBadge: true,
+      );
+      await androidPlugin.createNotificationChannel(alarmChannel);
     }
   }
 
@@ -144,7 +178,8 @@ class NotificationService {
 
       if (androidPlugin != null) {
         final granted = await androidPlugin.requestNotificationsPermission();
-        _hasNotificationPermission = granted ?? false;
+        final enabled = await androidPlugin.areNotificationsEnabled() ?? false;
+        _hasNotificationPermission = (granted == true) || enabled;
         return _hasNotificationPermission;
       }
     }
@@ -158,30 +193,70 @@ class NotificationService {
               AndroidFlutterLocalNotificationsPlugin>();
 
       if (androidPlugin != null) {
-        final granted =
-            await androidPlugin.requestExactAlarmsPermission();
-        _hasExactAlarmPermission = granted ?? false;
-        return _hasExactAlarmPermission;
+        try {
+          final granted = await androidPlugin.requestExactAlarmsPermission();
+          _hasExactAlarmPermission = granted ?? false;
+          return _hasExactAlarmPermission;
+        } catch (e) {
+          debugPrint('Exact alarm request error: $e');
+        }
       }
     }
     return false;
+  }
+
+  // ─── Helper for accurate TZ conversion ────────────────────────────────
+
+  tz.TZDateTime? _getScheduledTZDateTime(Task task) {
+    try {
+      final dateParts = task.date.split('-');
+      final timeParts = task.startTime.split(':');
+      if (dateParts.length < 3 || timeParts.length < 2) return null;
+
+      final year = int.parse(dateParts[0]);
+      final month = int.parse(dateParts[1]);
+      final day = int.parse(dateParts[2]);
+      final hour = int.parse(timeParts[0]);
+      final minute = int.parse(timeParts[1]);
+
+      return tz.TZDateTime(
+        tz.local,
+        year,
+        month,
+        day,
+        hour,
+        minute,
+      );
+    } catch (e) {
+      debugPrint('Error parsing scheduled date for task ${task.id}: $e');
+      return null;
+    }
   }
 
   // ─── Schedule Notifications ───────────────────────────────────────────
 
   /// Schedule a notification for a task
   Future<void> scheduleTaskNotification(Task task) async {
-    if (!_initialized || !_hasNotificationPermission) return;
+    if (!_initialized) {
+      await initialize();
+    }
     if (task.id == null) return;
 
-    final scheduledDate = task.startDateTime;
-    if (scheduledDate.isBefore(DateTime.now())) return;
+    // Refresh OS permissions
+    await checkPermissions();
 
-    final tzScheduled = tz.TZDateTime.from(scheduledDate, tz.local);
+    final tzScheduled = _getScheduledTZDateTime(task);
+    if (tzScheduled == null) return;
 
-    // Build notification details based on notification type
+    final nowTz = tz.TZDateTime.now(tz.local);
+    // If the scheduled time is already in the past, do not schedule
+    if (tzScheduled.isBefore(nowTz)) {
+      debugPrint(
+          'Task ${task.id} scheduled time ($tzScheduled) is in the past ($nowTz). Skipping.');
+      return;
+    }
+
     final androidDetails = _buildAndroidDetails(task);
-
     final notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: const DarwinNotificationDetails(
@@ -191,24 +266,25 @@ class NotificationService {
       ),
     );
 
-    // Use unique notification ID based on task ID
     final notifId = task.id!;
 
+    // Try exact alarm mode first for punctual reminders
     try {
-      if (_hasExactAlarmPermission) {
-        await _plugin.zonedSchedule(
-          notifId,
-          '📚 Study Time',
-          '${task.title}\n${task.startTime} – ${task.endTime}',
-          tzScheduled,
-          notificationDetails,
-          androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-          uiLocalNotificationDateInterpretation:
-              UILocalNotificationDateInterpretation.absoluteTime,
-          payload: 'task:${task.id}',
-        );
-      } else {
-        // Fallback to inexact scheduling
+      await _plugin.zonedSchedule(
+        notifId,
+        '📚 Study Time',
+        '${task.title}\n${task.startTime} – ${task.endTime}',
+        tzScheduled,
+        notificationDetails,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        payload: 'task:${task.id}',
+      );
+      debugPrint('Scheduled exact notification for task $notifId at $tzScheduled');
+    } catch (exactError) {
+      debugPrint('Exact alarm failed for task $notifId ($exactError). Falling back to inexact...');
+      try {
         await _plugin.zonedSchedule(
           notifId,
           '📚 Study Time',
@@ -220,24 +296,28 @@ class NotificationService {
               UILocalNotificationDateInterpretation.absoluteTime,
           payload: 'task:${task.id}',
         );
+        debugPrint('Scheduled inexact notification for task $notifId at $tzScheduled');
+      } catch (fallbackError) {
+        debugPrint('Failed to schedule notification completely for task $notifId: $fallbackError');
       }
-    } catch (e) {
-      debugPrint('Failed to schedule notification: $e');
     }
   }
 
   /// Schedule a pre-alert notification (X minutes before task)
   Future<void> schedulePreAlert(Task task, int minutesBefore) async {
-    if (!_initialized || !_hasNotificationPermission) return;
+    if (!_initialized) {
+      await initialize();
+    }
     if (task.id == null) return;
 
-    final preAlertTime =
-        task.startDateTime.subtract(Duration(minutes: minutesBefore));
-    if (preAlertTime.isBefore(DateTime.now())) return;
+    final tzScheduled = _getScheduledTZDateTime(task);
+    if (tzScheduled == null) return;
 
-    final tzPreAlert = tz.TZDateTime.from(preAlertTime, tz.local);
+    final tzPreAlert = tzScheduled.subtract(Duration(minutes: minutesBefore));
+    final nowTz = tz.TZDateTime.now(tz.local);
+    if (tzPreAlert.isBefore(nowTz)) return;
 
-    const androidDetails = AndroidNotificationDetails(
+    final androidDetails = AndroidNotificationDetails(
       AppConstants.studyAlertChannelId,
       AppConstants.studyAlertChannelName,
       channelDescription: AppConstants.studyAlertChannelDesc,
@@ -245,37 +325,48 @@ class NotificationService {
       priority: Priority.high,
       playSound: true,
       enableVibration: true,
+      vibrationPattern: _reminderVibrationPattern,
+      category: AndroidNotificationCategory.reminder,
     );
 
-    const notificationDetails = NotificationDetails(
+    final notificationDetails = NotificationDetails(
       android: androidDetails,
-      iOS: DarwinNotificationDetails(
+      iOS: const DarwinNotificationDetails(
         presentAlert: true,
         presentSound: true,
       ),
     );
 
-    // Use offset ID for pre-alert (task.id + 100000)
     final preAlertId = task.id! + 100000;
 
     try {
-      final scheduleMode = _hasExactAlarmPermission
-          ? AndroidScheduleMode.exactAllowWhileIdle
-          : AndroidScheduleMode.inexactAllowWhileIdle;
-
       await _plugin.zonedSchedule(
         preAlertId,
         '⏰ Coming Up',
         '${task.title} starts in $minutesBefore minutes',
         tzPreAlert,
         notificationDetails,
-        androidScheduleMode: scheduleMode,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         payload: 'prealert:${task.id}',
       );
-    } catch (e) {
-      debugPrint('Failed to schedule pre-alert: $e');
+    } catch (_) {
+      try {
+        await _plugin.zonedSchedule(
+          preAlertId,
+          '⏰ Coming Up',
+          '${task.title} starts in $minutesBefore minutes',
+          tzPreAlert,
+          notificationDetails,
+          androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+          payload: 'prealert:${task.id}',
+        );
+      } catch (e) {
+        debugPrint('Failed to schedule pre-alert: $e');
+      }
     }
   }
 
@@ -284,18 +375,66 @@ class NotificationService {
     final isAlarmStyle = task.notificationType == 'Alarm-style reminder';
     final isSilent = task.notificationType == 'Silent popup';
 
+    if (isAlarmStyle) {
+      return AndroidNotificationDetails(
+        AppConstants.alarmAlertChannelId,
+        AppConstants.alarmAlertChannelName,
+        channelDescription: AppConstants.alarmAlertChannelDesc,
+        importance: Importance.max,
+        priority: Priority.max,
+        playSound: true,
+        enableVibration: true,
+        vibrationPattern: _alarmVibrationPattern,
+        audioAttributesUsage: AudioAttributesUsage.alarm,
+        fullScreenIntent: true,
+        category: AndroidNotificationCategory.alarm,
+        visibility: NotificationVisibility.public,
+        autoCancel: false,
+        ongoing: false,
+        actions: const [
+          AndroidNotificationAction(
+            'start_now',
+            '▶ Start Now',
+            showsUserInterface: true,
+          ),
+          AndroidNotificationAction(
+            'snooze_10',
+            '⏰ Snooze 10m',
+            showsUserInterface: false,
+          ),
+          AndroidNotificationAction(
+            'done',
+            '✓ Done',
+            showsUserInterface: true,
+          ),
+        ],
+      );
+    }
+
+    if (isSilent) {
+      return AndroidNotificationDetails(
+        AppConstants.studyAlertChannelId,
+        AppConstants.studyAlertChannelName,
+        channelDescription: AppConstants.studyAlertChannelDesc,
+        importance: Importance.low,
+        priority: Priority.low,
+        playSound: false,
+        enableVibration: false,
+        visibility: NotificationVisibility.private,
+      );
+    }
+
+    // Default: 'Sound + vibration'
     return AndroidNotificationDetails(
       AppConstants.studyAlertChannelId,
       AppConstants.studyAlertChannelName,
       channelDescription: AppConstants.studyAlertChannelDesc,
       importance: Importance.max,
       priority: Priority.max,
-      playSound: !isSilent,
-      enableVibration: !isSilent,
-      fullScreenIntent: isAlarmStyle || task.isCritical,
-      category: isAlarmStyle
-          ? AndroidNotificationCategory.alarm
-          : AndroidNotificationCategory.reminder,
+      playSound: true,
+      enableVibration: true,
+      vibrationPattern: _reminderVibrationPattern,
+      category: AndroidNotificationCategory.reminder,
       visibility: NotificationVisibility.public,
       autoCancel: false,
       ongoing: false,
@@ -321,15 +460,17 @@ class NotificationService {
 
   /// Snooze a task notification by rescheduling it
   Future<void> snoozeNotification(Task task, int minutes) async {
-    if (!_initialized || task.id == null) return;
+    if (!_initialized) {
+      await initialize();
+    }
+    if (task.id == null) return;
 
-    // Cancel existing notification
     await cancelTaskNotification(task.id!);
 
-    final snoozeTime = DateTime.now().add(Duration(minutes: minutes));
-    final tzSnooze = tz.TZDateTime.from(snoozeTime, tz.local);
+    final nowTz = tz.TZDateTime.now(tz.local);
+    final tzSnooze = nowTz.add(Duration(minutes: minutes));
 
-    const androidDetails = AndroidNotificationDetails(
+    final androidDetails = AndroidNotificationDetails(
       AppConstants.studyAlertChannelId,
       AppConstants.studyAlertChannelName,
       channelDescription: AppConstants.studyAlertChannelDesc,
@@ -337,38 +478,53 @@ class NotificationService {
       priority: Priority.max,
       playSound: true,
       enableVibration: true,
+      vibrationPattern: _reminderVibrationPattern,
       category: AndroidNotificationCategory.reminder,
     );
 
-    const notificationDetails = NotificationDetails(
+    final notificationDetails = NotificationDetails(
       android: androidDetails,
     );
 
     try {
-      final scheduleMode = _hasExactAlarmPermission
-          ? AndroidScheduleMode.exactAllowWhileIdle
-          : AndroidScheduleMode.inexactAllowWhileIdle;
-
       await _plugin.zonedSchedule(
         task.id!,
         '📚 Snoozed Reminder',
         '${task.title}\nTime to study!',
         tzSnooze,
         notificationDetails,
-        androidScheduleMode: scheduleMode,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         payload: 'task:${task.id}',
       );
-    } catch (e) {
-      debugPrint('Failed to snooze notification: $e');
+    } catch (_) {
+      try {
+        await _plugin.zonedSchedule(
+          task.id!,
+          '📚 Snoozed Reminder',
+          '${task.title}\nTime to study!',
+          tzSnooze,
+          notificationDetails,
+          androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+          payload: 'task:${task.id}',
+        );
+      } catch (e) {
+        debugPrint('Failed to snooze notification: $e');
+      }
     }
   }
 
   /// Send a budget warning notification
   Future<void> showBudgetWarning(
       String category, double spent, double limit, String symbol) async {
-    if (!_initialized || !_hasNotificationPermission) return;
+    if (!_initialized) {
+      await initialize();
+    }
+    await checkPermissions();
+    if (!_hasNotificationPermission) return;
 
     final percentage = ((spent / limit) * 100).round();
     final isOver = spent >= limit;
@@ -404,10 +560,12 @@ class NotificationService {
   // ─── Reschedule All Notifications ─────────────────────────────────────
 
   /// Reschedule all future task notifications.
-  /// Called after boot, timezone change, app update, or database change.
+  /// Called after boot, timezone change, app update, or permission grant.
   Future<void> rescheduleAllNotifications(List<Task> futureTasks,
       {bool preAlertEnabled = false, int preAlertMinutes = 5}) async {
-    if (!_initialized) return;
+    if (!_initialized) {
+      await initialize();
+    }
 
     await cancelAllNotifications();
     await checkPermissions();

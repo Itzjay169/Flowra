@@ -45,6 +45,11 @@
             </intent-filter>
         </activity>
 
+        <!-- Scheduled notification receiver (required for alarms and scheduled reminders) -->
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
+            android:exported="false" />
+
         <!-- Boot receiver to reschedule notifications after reboot -->
         <receiver
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"

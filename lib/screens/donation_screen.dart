@@ -167,7 +167,7 @@ class _DonationScreenState extends State<DonationScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Independent Developer & Creator of Flowra\nBuilding offline-first productivity tools.',
+              'Independent Developer & Creator of Flowra\nBuilding offline productivity tools.',
               style: TextStyle(
                 fontSize: 14,
                 color: isDark ? Colors.grey[400] : Colors.grey[600],
@@ -406,7 +406,7 @@ class _DonationScreenState extends State<DonationScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              '© ${DateTime.now().year} ${AppConstants.developerName}. All rights reserved.',
+              '© ${DateTime.now().year} Copyright Claim. All rights reserved.',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -425,7 +425,7 @@ class _DonationScreenState extends State<DonationScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              'If Flowra helps you, consider supporting its development ❤️',
+              'If Flowra helps you, consider supporting its development by some donation',
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? Colors.grey[500] : Colors.grey[500],

@@ -23,11 +23,16 @@ class AppConstants {
   // Set to true when you configure a valid UPI ID or payment link
   static const bool isDonationEnabled = true;
 
-  // Notification channel
-  static const String studyAlertChannelId = 'study_alerts';
-  static const String studyAlertChannelName = 'Alerts & Reminders';
+  // Notification channels
+  static const String studyAlertChannelId = 'study_alerts_v2';
+  static const String studyAlertChannelName = 'Task Alerts & Reminders';
   static const String studyAlertChannelDesc =
-      'High-priority reminders for your schedule';
+      'High-priority notifications and sound reminders for your tasks';
+
+  static const String alarmAlertChannelId = 'task_alarm_alerts_v2';
+  static const String alarmAlertChannelName = 'Task Alarms (High Priority)';
+  static const String alarmAlertChannelDesc =
+      'Alarm sound and vibration alerts for critical schedule tasks';
 
   // Default settings
   static const String defaultCurrency = '₹';

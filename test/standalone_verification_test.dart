@@ -134,7 +134,7 @@ void main() {
       expect(AppConstants.appName, 'Flowra');
       expect(AppConstants.defaultCurrency, '₹');
       expect(AppConstants.defaultCurrencyCode, 'INR');
-      expect(AppConstants.studyAlertChannelId, 'study_alerts');
+      expect(AppConstants.studyAlertChannelId, 'study_alerts_v2');
       expect(AppConstants.expenseCategories.length, 8);
       expect(AppConstants.paymentMethods.length, 4);
     });

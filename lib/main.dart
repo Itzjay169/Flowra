@@ -19,6 +19,7 @@ import 'package:flowra/screens/settings_screen.dart';
 import 'package:flowra/screens/add_edit_task_screen.dart';
 import 'package:flowra/screens/add_edit_expense_screen.dart';
 import 'package:flowra/screens/study_focus_screen.dart';
+import 'package:flowra/widgets/app_footer.dart';
 import 'package:flowra/utils/theme.dart';
 
 void main() async {
@@ -215,36 +216,15 @@ class _MainShellState extends State<MainShell> {
         index: _currentIndex,
         children: pages,
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      // ======================================================================
+      // 📱 FOOTER SECTION (Bottom Navigation Bar)
+      // ----------------------------------------------------------------------
+      // To manually customize footer items, icons, and labels, edit:
+      // lib/widgets/app_footer.dart
+      // ======================================================================
+      bottomNavigationBar: AppFooter(
         currentIndex: _currentIndex,
-        onTap: _onTabChanged,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            activeIcon: Icon(Icons.home_rounded),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month_outlined),
-            activeIcon: Icon(Icons.calendar_month_rounded),
-            label: 'Timetable',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet_outlined),
-            activeIcon: Icon(Icons.account_balance_wallet_rounded),
-            label: 'Expenses',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_outlined),
-            activeIcon: Icon(Icons.bar_chart_rounded),
-            label: 'Reports',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings_rounded),
-            label: 'Settings',
-          ),
-        ],
+        onTabSelected: _onTabChanged,
       ),
     );
   }

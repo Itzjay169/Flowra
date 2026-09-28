@@ -45,7 +45,10 @@ class SettingsScreen extends StatelessWidget {
             ),
             onTap: () async {
               if (!settings.hasNotificationPermission) {
-                await settings.requestNotificationPermission();
+                final granted = await settings.requestNotificationPermission();
+                if (granted && context.mounted) {
+                  await context.read<TaskProvider>().rescheduleAllNotifications();
+                }
               }
             },
           ),
@@ -65,7 +68,10 @@ class SettingsScreen extends StatelessWidget {
             ),
             onTap: () async {
               if (!settings.hasExactAlarmPermission) {
-                await settings.requestExactAlarmPermission();
+                final granted = await settings.requestExactAlarmPermission();
+                if (granted && context.mounted) {
+                  await context.read<TaskProvider>().rescheduleAllNotifications();
+                }
               }
             },
           ),
