@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Flowra</title>
+  <meta name="description" content="Privacy Policy for Flowra mobile app and website. 100% offline, zero data collection.">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .legal-content {
+      max-width: 820px;
+      margin: 40px auto 80px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 48px;
+      box-shadow: var(--card-shadow);
+    }
+    .legal-content h1 {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+    .legal-content .last-updated {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      display: block;
+    }
+    .legal-content h2 {
+      font-size: 1.4rem;
+      margin: 32px 0 12px;
+      color: var(--text-main);
+    }
+    .legal-content p, .legal-content li {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+    .legal-content ul {
+      margin-left: 24px;
+      margin-bottom: 20px;
+    }
+    .highlight-card {
+      background: rgba(var(--primary-rgb), 0.08);
+      border: 1px solid rgba(var(--primary-rgb), 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a href="index.html" class="brand-link">
+        <img src="assets/icon.png" alt="Flowra Logo" class="brand-logo">
+        <span>Flowra</span>
+      </a>
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-outline" style="padding: 8px 16px; font-size: 0.85rem;">← Back to App</a>
+        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Theme">☀️</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <article class="legal-content">
+      <h1>Privacy Policy</h1>
+      <span class="last-updated">Effective Date: September 28, 2026</span>
+
+      <div class="highlight-card">
+        <strong style="color: var(--text-main); font-size: 1.1rem; display: block; margin-bottom: 6px;">
+          Summary: Zero Cloud. Zero Ads. Complete Privacy.
+        </strong>
+        <p style="margin: 0;">
+          Flowra was built with the fundamental belief that your personal schedule, study habits, and financial expenses belong exclusively to you. The app collects no data whatsoever.
+        </p>
+      </div>
+
+      <h2>1. The Flowra Mobile Application</h2>
+      <p>
+        The Flowra mobile application operates 100% offline on your device:
+      </p>
+      <ul>
+        <li><strong>No Telemetry or Tracking:</strong> Flowra contains no advertising SDKs, no Google Analytics, no Firebase Crashlytics, and no third-party tracking scripts.</li>
+        <li><strong>Local Device Storage:</strong> All tasks, routines, timetables, expenses, categories, and settings are stored locally on your device in an SQLite database.</li>
+        <li><strong>No Account Required:</strong> You never register, log in, or provide personal credentials to use the app.</li>
+        <li><strong>Offline Alarms:</strong> Reminder alarms are scheduled directly with the Android operating system using local alarm APIs. No push servers are used.</li>
+        <li><strong>Data Portability:</strong> You can export your expenses at any time into a CSV file saved locally to your device, or delete all data permanently using the "Clear All Data" setting.</li>
+      </ul>
+
+      <h2>2. Device Permissions Used</h2>
+      <p>Flowra requests only the minimal Android permissions necessary for local offline utility:</p>
+      <ul>
+        <li><code>POST_NOTIFICATIONS</code> (Android 13+): Used exclusively to show local reminders and notification action buttons.</li>
+        <li><code>SCHEDULE_EXACT_ALARM</code> & <code>USE_EXACT_ALARM</code>: Used to trigger alarms at the exact scheduled time for tasks.</li>
+        <li><code>RECEIVE_BOOT_COMPLETED</code>: Used solely to reschedule your existing task alarms after your device is restarted or timezone changes.</li>
+        <li><code>USE_FULL_SCREEN_INTENT</code>: Used for heads-up alarm screens on critical tasks.</li>
+      </ul>
+
+      <h2>3. The Flowra Website & Suggestion Form</h2>
+      <p>
+        The Flowra website is a static site hosted via GitHub Pages.
+      </p>
+      <ul>
+        <li><strong>No Tracking Cookies:</strong> The website uses local browser storage (<code>localStorage</code>) solely to remember your chosen theme preference (dark/light mode) and prevent duplicate form spam.</li>
+        <li><strong>Suggestion & Feature Request Form:</strong> When you submit a suggestion via our community form, only the information you explicitly type (your name if provided, your email address if provided, category, Flowra version, and your message) is transmitted securely via Web3Forms directly to the developer's personal email (<code>magicianbusiness30@gmail.com</code>).</li>
+        <li><strong>Email Usage:</strong> If you supply an email address, it is used strictly to reply to your question or feedback. Your email is never sold, shared, or added to marketing newsletters.</li>
+      </ul>
+
+      <h2>4. Third-Party Links</h2>
+      <p>
+        The website and app contain links to external platforms (such as GitHub and Instagram) and optional UPI payment links (e.g. for developer donation). Interacting with external payment apps or platforms is governed by their respective privacy policies.
+      </p>
+
+      <h2>5. Contact</h2>
+      <p>
+        If you have any questions or feedback regarding privacy in Flowra, please contact:
+      </p>
+      <p>
+        <strong>Jay (Itz30jay)</strong><br>
+        Email: <a href="mailto:magicianbusiness30@gmail.com">magicianbusiness30@gmail.com</a><br>
+        GitHub: <a href="https://github.com/Itz30jay/Flowra" target="_blank" rel="noopener noreferrer">https://github.com/Itz30jay/Flowra</a>
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container" style="text-align: center;">
+      <p>© 2026 Flowra • Licensed under the MIT License • Made with ❤ in Flutter</p>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script>
+    // Simple theme switcher for privacy page
+    const stored = localStorage.getItem('flowra_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', stored);
+    const btn = document.getElementById('themeToggleBtn');
+    if (btn) {
+      btn.textContent = stored === 'dark' ? '☀️' : '🌙';
+      btn.onclick = () => {
+        const cur = document.documentElement.getAttribute('data-theme');
+        const next = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('flowra_theme', next);
+        btn.textContent = next === 'dark' ? '☀️' : '🌙';
+      };
+    }
+  </script>
+</body>
+</html>

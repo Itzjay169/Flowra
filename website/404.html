@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Page Not Found | Flowra</title>
+  <meta name="description" content="The page you're looking for doesn't exist. Head back to the Flowra homepage.">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .error-page {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 24px;
+    }
+    .error-code {
+      font-size: clamp(5rem, 12vw, 10rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-pink) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .error-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .error-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a href="index.html" class="brand-link">
+        <img src="assets/icon.png" alt="Flowra Logo" class="brand-logo">
+        <span>Flowra</span>
+      </a>
+      <div class="nav-actions">
+        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Theme">☀️</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="error-page">
+    <div class="error-code">404</div>
+    <h1 class="error-title">Page Not Found</h1>
+    <p class="error-desc">
+      The page you're looking for doesn't exist or may have been moved. Let's get you back on track.
+    </p>
+    <div style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center;">
+      <a href="index.html" class="btn btn-primary">← Back to Homepage</a>
+      <a href="index.html#versions" class="btn btn-outline">📦 All Versions</a>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container" style="text-align: center;">
+      <p>© 2026 Flowra • Licensed under the MIT License</p>
+    </div>
+  </footer>
+
+  <script>
+    const stored = localStorage.getItem('flowra_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', stored);
+    const btn = document.getElementById('themeToggleBtn');
+    if (btn) {
+      btn.textContent = stored === 'dark' ? '☀️' : '🌙';
+      btn.onclick = () => {
+        const cur = document.documentElement.getAttribute('data-theme');
+        const next = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('flowra_theme', next);
+        btn.textContent = next === 'dark' ? '☀️' : '🌙';
+      };
+    }
+  </script>
+</body>
+</html>

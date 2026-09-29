@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://itz30jay.github.io/Flowra/sitemap.xml
