@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flowra — Offline Planner & Expense Tracker | Zero Cloud, Zero Ads</title>
+
+  <!-- SEO & Meta Tags -->
+  <meta name="description"
+    content="Flowra is a 100% offline-first Android planner and expense tracker. Zero cloud, zero ads, complete privacy. Download the latest APK safely.">
+  <meta name="keywords"
+    content="Flowra, offline planner, expense tracker, student timetable, exact alarm reminder, pomodoro timer, privacy android app, budget tracker">
+  <meta name="author" content="Jay (Itz30jay)">
+  <link rel="canonical" href="https://itz30jay.github.io/Flowra/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://itz30jay.github.io/Flowra/">
+  <meta property="og:title" content="Flowra — Offline Planner & Expense Tracker">
+  <meta property="og:description"
+    content="Zero cloud. Zero ads. Complete privacy. All your tasks, study schedules, and expenses remain 100% on your device.">
+  <meta property="og:image" content="assets/icon.png">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Flowra — Offline Planner & Expense Tracker">
+  <meta name="twitter:description"
+    content="100% offline planner and expense tracker with strong exact alarms and zero tracking.">
+  <meta name="twitter:image" content="assets/icon.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/icon.png">
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- ======================================================================
+       HEADER / NAVIGATION
+       ====================================================================== -->
+  <header class="site-header" id="top">
+    <div class="container nav-wrap">
+      <a href="#top" class="brand-link" aria-label="Flowra Home">
+        <img src="assets/icon.png" alt="Flowra Logo" class="brand-logo">
+        <span>Flowra</span>
+        <span class="brand-badge">Android</span>
+      </a>
+
+      <!-- Global Search -->
+      <div class="nav-search" role="search">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="navSearchInput" placeholder="Search versions or changes..."
+          aria-label="Search versions or changes">
+        <span class="kbd-hint">/</span>
+      </div>
+
+      <!-- Nav Links -->
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#versions">Versions</a></li>
+          <li><a href="#install">Install</a></li>
+          <li><a href="#suggest">Suggest</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <!-- Actions -->
+      <div class="nav-actions">
+        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle Dark/Light Mode" title="Toggle Theme">
+          ☀️
+        </button>
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open mobile menu">
+          ☰
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ======================================================================
+         HERO SECTION
+         ====================================================================== -->
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-pill">
+          <span class="pulse-dot"></span>
+          <span>100% Offline • Free & Open Source</span>
+        </div>
+
+        <h1 class="hero-title">
+          Flowra — <span class="gradient-text">Offline Planner & Expense Tracker</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Zero cloud. Zero ads. Complete privacy. Manage your daily routine, exact alarm reminders, focus sessions, and
+          budgets entirely on your device.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="#" id="heroDownloadBtn" class="btn btn-primary btn-hero-download" download>
+            <span class="btn-main-label">
+              <span>⬇</span>
+              <strong id="heroVersionLabel">Download Latest Version</strong>
+            </span>
+            <span class="btn-sub-label">
+              <span id="heroSizeLabel">18.5 MB</span> • <span id="heroDateLabel">Loading release...</span>
+            </span>
+          </a>
+          <a href="#versions" class="btn btn-outline">
+            <span>📑 All Versions</span>
+          </a>
+        </div>
+
+        <div class="hero-meta-badges">
+          <span>🔒 No Account Required</span>
+          <span>⚡ Exact Alarm Reminders</span>
+          <span>💾 SQLite Local Database</span>
+          <span>🛡️ Verified SHA-256 Checksums</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         FEATURES SECTION
+         ====================================================================== -->
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Key Capabilities</span>
+          <h2 class="section-title">Built for Real Life Productivity</h2>
+          <p class="section-subtitle">A balanced fusion of schedule planning and expense management designed to keep you
+            focused and in control.</p>
+        </div>
+
+        <div class="features-grid">
+          <!-- Feature 1 -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">📅</div>
+            <h3 class="feature-title">Study & Routine Timetable</h3>
+            <p class="feature-desc">
+              Interactive daily schedule and weekly horizontal timeline. Fast subject filter chips, date jump
+              navigation, priority tagging, and automatic collision warnings when sessions overlap.
+            </p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">🔔</div>
+            <h3 class="feature-title">Strong & Exact Alarms</h3>
+            <p class="feature-desc">
+              High-priority offline reminders configured with Android exact alarms. Survives phone restarts,
+              force-closes, and airplane mode with direct actions to start, snooze, or mark complete.
+            </p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">⏱️</div>
+            <h3 class="feature-title">Focus & Pomodoro Timer</h3>
+            <p class="feature-desc">
+              Distraction-free countdown timer with 25m, 45m, and 60m presets. Link tasks directly to your study timer
+              to automatically mark tasks completed when your deep work session ends.
+            </p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">💳</div>
+            <h3 class="feature-title">Daily Expense & Budgeting</h3>
+            <p class="feature-desc">
+              Lightning-fast logging with categories (Food, Travel, College, Shopping, etc.) and payment tags (Cash,
+              UPI, Card). Set monthly spending limits with proactive 80% and 100% budget alerts.
+            </p>
+          </div>
+
+          <!-- Feature 5 -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">📊</div>
+            <h3 class="feature-title">Visual Reports & Analytics</h3>
+            <p class="feature-desc">
+              Gain clear insights into your habits: weekly task completion rate bar charts, interactive spending
+              category breakdowns, and 30-day historical expense trends.
+            </p>
+          </div>
+
+          <!-- Feature 6 -->
+          <div class="feature-card">
+            <div class="feature-icon-wrap">🛡️</div>
+            <h3 class="feature-title">Zero Cloud • 100% Privacy</h3>
+            <p class="feature-desc">
+              No servers, no telemetry, no Google account requirement. All data lives in a local SQLite database on your
+              device with clean one-tap CSV export whenever you need it.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         APP SHOWCASE / SCREENSHOTS SECTION
+         ====================================================================== -->
+    <section class="section" id="screenshots">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">User Experience</span>
+          <h2 class="section-title">Designed with Care & Precision</h2>
+          <p class="section-subtitle">Experience a clean, responsive Material 3 interface with deep indigo tones
+            tailored for both day and night use.</p>
+        </div>
+
+        <div class="showcase-container">
+          <div class="showcase-item">
+            <div class="mockup-frame">
+              <div class="screen-icon">📊</div>
+              <span class="screen-tag">Dashboard</span>
+            </div>
+            <h4>Home Dashboard</h4>
+            <p>Today's focus countdown, upcoming routines, and quick expense stats.</p>
+          </div>
+
+          <div class="showcase-item">
+            <div class="mockup-frame">
+              <div class="screen-icon">🗓️</div>
+              <span class="screen-tag">Routine Planner</span>
+            </div>
+            <h4>Timetable & Planner</h4>
+            <p>Weekly timeline navigation with subject filter chips and collision detection.</p>
+          </div>
+
+          <div class="showcase-item">
+            <div class="mockup-frame">
+              <div class="screen-icon">⏱️</div>
+              <span class="screen-tag">Deep Study</span>
+            </div>
+            <h4>Pomodoro Focus Mode</h4>
+            <p>Minimalist countdown timer with motivational student prompts.</p>
+          </div>
+
+          <div class="showcase-item">
+            <div class="mockup-frame">
+              <div class="screen-icon">💳</div>
+              <span class="screen-tag">Budgeting</span>
+            </div>
+            <h4>Expenses & Budgets</h4>
+            <p>Fast expense entry with category breakdowns and 80% threshold warnings.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         ALL VERSIONS & RELEASES TIMELINE
+         ====================================================================== -->
+    <section class="section" id="versions">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Release History</span>
+          <h2 class="section-title">All Versions & Downloads</h2>
+          <p class="section-subtitle">Every release is built from source, checksum-verified, and hosted on GitHub
+            Releases for complete integrity.</p>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="versions-controls">
+          <div class="version-search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="versionSearchInput" placeholder="Filter by version or keyword (e.g. alarm, 1.0)..."
+              aria-label="Filter versions">
+          </div>
+          <div class="version-sort-wrap">
+            <label for="versionSortSelect"
+              style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Sort:</label>
+            <select id="versionSortSelect" aria-label="Sort releases">
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Dynamic Timeline (Populated from releases.json) -->
+        <div class="versions-timeline" id="versionsTimeline">
+          <!-- Populated by main.js -->
+          <div style="text-align: center; padding: 40px;">
+            <p style="color: var(--text-muted);">Loading releases from releases.json...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         INSTALL GUIDE & CHECKSUM VERIFICATION
+         ====================================================================== -->
+    <section class="section" id="install">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Simple Setup</span>
+          <h2 class="section-title">How to Install Flowra APK</h2>
+          <p class="section-subtitle">Follow these quick steps to install Flowra directly on any Android device running
+            Android 8.0 or newer.</p>
+        </div>
+
+        <div class="install-steps">
+          <div class="step-card">
+            <div class="step-number">01</div>
+            <div class="step-icon">📥</div>
+            <h4>1. Download the APK</h4>
+            <p>Download the latest release APK above using Chrome or your device browser. Android will save the file to
+              your Downloads folder.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">02</div>
+            <div class="step-icon">⚙️</div>
+            <h4>2. Allow Unknown Apps</h4>
+            <p>When opening the APK, Android may display <em>"For your security, your phone is not allowed to install
+                unknown apps"</em>. Tap <strong>Settings</strong> and enable <strong>"Allow from this source"</strong>.
+            </p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">03</div>
+            <div class="step-icon">✅</div>
+            <h4>3. Tap Install & Open</h4>
+            <p>Return to the installer, tap <strong>Install</strong>, and launch Flowra. Grant notification & exact
+              alarm permissions when prompted for reliable reminders.</p>
+          </div>
+        </div>
+
+        <!-- SHA-256 Verification Guide -->
+        <div class="integrity-box">
+          <h4>🔒 How to Verify SHA-256 Checksum</h4>
+          <p style="color: var(--text-muted); font-size: 0.925rem; margin-bottom: 12px;">
+            To guarantee that your downloaded APK has not been modified or corrupted, verify its SHA-256 checksum
+            against the official hash published in the release notes above.
+          </p>
+
+          <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">On Windows (PowerShell):</p>
+          <div class="code-snippet">
+            Get-FileHash -Algorithm SHA256 .\Flowra-v1.0.0.apk
+          </div>
+
+          <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-top: 10px;">On macOS / Linux:
+          </p>
+          <div class="code-snippet">
+            sha256sum Flowra-v1.0.0.apk
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SUGGESTIONS / FEATURE REQUEST SECTION
+         ====================================================================== -->
+    <section class="section" id="suggest">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Community Feedback</span>
+          <h2 class="section-title">Help Make Flowra Better for Everyone</h2>
+          <p class="section-subtitle">Have an idea for a new feature, a workflow improvement, or spotted a bug? Share it
+            directly with the developer.</p>
+        </div>
+
+        <div class="suggestion-layout">
+          <!-- Suggestion Form -->
+          <div class="suggestion-form-card">
+            <form id="suggestionForm" novalidate>
+              <!-- Anti-Spam Honeypot Field -->
+              <input type="text" name="hp_website_url" id="hp_website_url" style="display:none !important;"
+                tabindex="-1" autocomplete="off">
+
+              <!-- Name -->
+              <div class="form-group">
+                <label for="suggestName">Your Name <span
+                    style="font-weight: 400; color: var(--text-muted);">(optional)</span></label>
+                <input type="text" id="suggestName" placeholder="e.g. Alex" autocomplete="name">
+              </div>
+
+              <!-- Email -->
+              <div class="form-group">
+                <label for="suggestEmail">Your Email <span
+                    style="font-weight: 400; color: var(--text-muted);">(optional, so I can reply)</span></label>
+                <input type="email" id="suggestEmail" placeholder="e.g. alex@example.com" autocomplete="email">
+              </div>
+
+              <!-- Type & Version Row -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                  <label for="suggestType">Type</label>
+                  <select id="suggestType">
+                    <option value="Feature request">Feature request</option>
+                    <option value="Improvement">Improvement</option>
+                    <option value="Bug report">Bug report</option>
+                    <option value="Other">Other feedback</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="suggestVersion">Flowra Version</label>
+                  <select id="suggestVersion">
+                    <option value="Not installed yet">Not installed yet</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Message -->
+              <div class="form-group">
+                <label for="suggestMessage">Your Suggestion / Feedback <span
+                    style="color: var(--danger);">*</span></label>
+                <textarea id="suggestMessage" maxlength="1000"
+                  placeholder="Describe the feature or improvement in detail..." required></textarea>
+                <div class="char-counter-row">
+                  <span>Be as specific as possible</span>
+                  <span id="charCount">0 / 1000</span>
+                </div>
+              </div>
+
+              <div class="form-privacy-note">
+                <span>💬</span>
+                <span>I read every suggestion. Your email is used only to reply to you.</span>
+              </div>
+
+              <!-- Alerts -->
+              <div id="formAlertSuccess" class="alert-box alert-success"></div>
+              <div id="formAlertError" class="alert-box alert-error"></div>
+
+              <!-- Submit Button -->
+              <button type="submit" id="suggestSubmitBtn" class="btn btn-primary" style="width: 100%;">
+                <span>Submit Suggestion</span>
+              </button>
+
+              <!-- Fallback Options -->
+              <div id="fallbackActions" class="fallback-actions">
+                <a href="#" id="emailFallbackBtn" class="btn btn-outline" style="width: 100%;">
+                  <span>✉️ Send by Email Instead</span>
+                </a>
+                <a href="#" id="githubFallbackBtn" target="_blank" rel="noopener noreferrer" class="btn btn-outline"
+                  style="width: 100%;">
+                  <span>🐙 Suggest on GitHub Issues</span>
+                </a>
+              </div>
+            </form>
+          </div>
+
+          <!-- Roadmap / Top Requested Features -->
+          <div class="roadmap-card">
+            <div class="roadmap-header">
+              <span class="section-tag" style="margin-bottom: 4px;">What's Coming</span>
+              <h3>Planned Roadmap</h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted);">
+                Here are the top requested community items currently planned or in development.
+              </p>
+            </div>
+
+            <div class="roadmap-list" id="roadmapList">
+              <!-- Populated dynamically from config.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         FAQ SECTION
+         ====================================================================== -->
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Got Questions?</span>
+          <h2 class="section-title">Frequently Asked Questions</h2>
+          <p class="section-subtitle">Everything you need to know about Flowra's offline architecture, security, and
+            permissions.</p>
+        </div>
+
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span>Is Flowra really 100% offline?</span>
+              <span class="faq-icon">▼</span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Yes, completely. Flowra has zero backend servers, zero telemetry SDKs, and zero cloud sync. All your
+                routines, tasks, expenses, and settings are stored locally on your device in an encrypted SQLite
+                database. You can run Flowra seamlessly in airplane mode with full functionality.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span>Why does Flowra need Exact Alarm & Notification permissions?</span>
+              <span class="faq-icon">▼</span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Android 13 and 14 require explicit permissions (`POST_NOTIFICATIONS` and `SCHEDULE_EXACT_ALARM`) for
+                alarm-style reminders. Exact alarm permissions ensure Flowra fires your scheduled routines at the exact
+                minute rather than being batched or delayed by aggressive battery-saving modes. Flowra uses
+                `RECEIVE_BOOT_COMPLETED` solely to restore your scheduled alarms after phone restarts.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span>Is the APK safe to install on my device?</span>
+              <span class="faq-icon">▼</span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Yes. Every release APK is built automatically in public via GitHub Actions from the open-source
+                repository. You can verify the integrity of the downloaded file using the published SHA-256 checksum
+                against your local download. Flowra is completely open source under the MIT License.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span>How do I update to a newer version of Flowra?</span>
+              <span class="faq-icon">▼</span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Whenever a new version is released, simply download the latest APK from this website and tap install.
+                Android will recognize the matching package ID (`com.flowra.flowra`) and perform an update in-place,
+                keeping all your existing tasks, timetable sessions, and expenses completely intact.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span>Can I suggest a new feature or report an issue?</span>
+              <span class="faq-icon">▼</span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Absolutely! You can submit ideas via the <a href="#suggest">Suggestion Form</a> above, email the
+                developer directly at <a href="mailto:magicianbusiness30@gmail.com">magicianbusiness30@gmail.com</a>, or
+                open an issue on our <a href="https://github.com/Itz30jay/Flowra/issues" target="_blank"
+                  rel="noopener noreferrer">GitHub repository</a>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ======================================================================
+       LARGE, DETAILED FOOTER
+       ====================================================================== -->
+  <footer class="site-footer" id="contact">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Column 1: About Flowra -->
+        <div class="footer-col">
+          <div class="footer-brand">
+            <img src="assets/icon.png" alt="Flowra Logo">
+            <span>Flowra</span>
+          </div>
+          <p>
+            Offline-first planner & expense tracker for students, professionals, and privacy enthusiasts.
+          </p>
+          <p style="font-weight: 700; color: var(--primary-light); font-size: 0.85rem;">
+            Zero Cloud. Zero Ads. Complete Privacy.
+          </p>
+          <p style="font-size: 0.825rem; color: var(--text-subtle);">
+            Current Release: <strong id="footerCurrentVersion" style="color: var(--text-main);">v1.0.0</strong>
+          </p>
+        </div>
+
+        <!-- Column 2: About Developer -->
+        <div class="footer-col">
+          <h4>About Developer</h4>
+          <p id="footerDevName" style="font-weight: 700; color: var(--text-main);">Jay (Itz30jay)</p>
+          <p id="footerDevBio">
+            Independent mobile developer building tools with zero cloud dependency and uncompromising user privacy.
+          </p>
+          <p id="footerDevLocation" style="font-size: 0.825rem; color: var(--text-subtle);">
+            📍 Based in India
+          </p>
+        </div>
+
+        <!-- Column 3: Connect & Support -->
+        <div class="footer-col">
+          <h4>Connect & Support</h4>
+          <div class="social-links-list">
+            <a href="https://www.instagram.com/jay_dev._._" id="footerInstagramLink" target="_blank"
+              rel="noopener noreferrer" class="social-link-item">
+              <span>📸</span> <span>Instagram (@jay_dev._._)</span>
+            </a>
+            <a href="https://github.com/Itz30jay" id="footerGithubProfileLink" target="_blank" rel="noopener noreferrer"
+              class="social-link-item">
+              <span>🐙</span> <span>GitHub Profile</span>
+            </a>
+            <a href="mailto:magicianbusiness30@gmail.com" id="footerEmailLink" class="social-link-item">
+              <span>✉️</span> <span>magicianbusiness30@gmail.com</span>
+            </a>
+            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
+              <span style="font-size: 0.8rem; color: var(--text-subtle); display: block; margin-bottom: 4px;">Support
+                via UPI:</span>
+              <button class="sha256-copy-btn"
+                onclick="copyToClipboard('jaykishandas30@oksbi', 'UPI ID copied to clipboard!')"
+                style="width: 100%; justify-content: space-between;">
+                <span id="footerDonationUpi">jaykishandas30@oksbi</span>
+                <span>📋 Copy</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 4: Quick Links -->
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#top">Download Latest</a></li>
+            <li><a href="#versions">All Versions</a></li>
+            <li><a href="#install">Install Guide</a></li>
+            <li><a href="#suggest">Suggest a Feature</a></li>
+            <li><a href="https://github.com/Itz30jay/Flowra/blob/main/CHANGELOG.md" target="_blank"
+                rel="noopener noreferrer">Changelog</a></li>
+            <li><a href="https://github.com/Itz30jay/Flowra/issues" target="_blank" rel="noopener noreferrer">Report a
+                Bug (GitHub)</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom-bar">
+        <div>
+          © <span id="currentYear">2026</span> Flowra • Licensed under the MIT License.
+        </div>
+        <div>
+          Made with ❤ in Flutter
+        </div>
+        <button id="backToTopBtn" class="back-to-top-btn" type="button" aria-label="Scroll back to top">
+          ↑ Back to Top
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="config.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
