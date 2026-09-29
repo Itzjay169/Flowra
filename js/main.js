@@ -123,8 +123,8 @@ async function loadReleases() {
         releaseDate: "2026-09-28",
         title: "Flowra v1.0.0 — Initial Official Release",
         apkFileName: "Flowra-v1.0.0.apk",
-        fileSizeMb: 18.5,
-        sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fileSizeMb": 61.9,
+        "sha256": "1252df17e69d5ae245acdf7834737b3ad3778862d8595fe3c14b4cbadce1c5a6",,
         downloadUrl: "https://github.com/Itz30jay/Flowra/releases/download/v1.0.0/Flowra-v1.0.0.apk",
         githubReleaseUrl: "https://github.com/Itz30jay/Flowra/releases/tag/v1.0.0",
         changes: {
@@ -184,7 +184,7 @@ function updateHeroSection(latest) {
     heroVersionLabel.textContent = `Download v${latest.version}`;
   }
   if (heroSizeLabel && latest) {
-    heroSizeLabel.textContent = `${latest.fileSizeMb || '18.5'} MB`;
+    heroSizeLabel.textContent = `${latest.fileSizeMb || '61.9'} MB`;
   }
   if (heroDateLabel && latest) {
     heroDateLabel.textContent = `Released on ${latest.releaseDate}`;
@@ -273,7 +273,7 @@ function renderVersions(releases) {
             </div>
             <div class="spec-item">
               <span>Size:</span>
-              <strong>${rel.fileSizeMb || '18.5'} MB</strong>
+              <strong>${rel.fileSizeMb || '61.9'} MB</strong>
             </div>
           </div>
           ${sha ? `
