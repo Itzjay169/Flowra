@@ -1,0 +1,36 @@
+[
+  {
+    "version": "1.0.0",
+    "buildNumber": 1,
+    "releaseDate": "2026-09-28",
+    "title": "Flowra v1.0.0 — Initial Official Release",
+    "apkFileName": "Flowra-v1.0.0.apk",
+    "fileSizeMb": 18.5,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "downloadUrl": "https://github.com/Itz30jay/Flowra/releases/download/v1.0.0/Flowra-v1.0.0.apk",
+    "githubReleaseUrl": "https://github.com/Itz30jay/Flowra/releases/tag/v1.0.0",
+    "changes": {
+      "Added": [
+        "Study Timetable & Routine Planner: Daily/weekly interactive timelines, subject filtering, and overlap detection.",
+        "Exact Alarms & Offline Notifications: Survives phone restarts with high-priority Android alarm channels.",
+        "Study Focus & Pomodoro Mode: Clean focus timer with 25m, 45m, and 60m presets.",
+        "Daily Expense Tracker & Budget: Fast expense logging, category filtering, and 80%/100% budget alerts.",
+        "Visual Analytics & Reports: Weekly task completion charts and 30-day expense breakdowns.",
+        "100% Offline SQLite Storage with CSV export for all expense data.",
+        "Optional Developer Support screen with instant UPI deep-linking.",
+        "Automated CI/CD build pipeline for APK and AAB binaries."
+      ],
+      "Changed": [
+        "Full brand refresh to Flowra with deep indigo Material 3 theme and new app icons.",
+        "Modular app footer and updated copyright info.",
+        "Configured secure keystore release signing."
+      ],
+      "Fixed": [
+        "Notification alarm triggers for Android 13/14+ exact alarm policies.",
+        "StudyFocusScreen layout overflow on smaller screen heights.",
+        "Resolved all analysis warnings and lints."
+      ],
+      "Removed": []
+    }
+  }
+]
