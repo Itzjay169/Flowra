@@ -55,14 +55,10 @@ const FlowraConfig = {
   },
 
   // Suggestion & Feature Request Form Configuration
-  // Uses Web3Forms (100% free, no backend required, delivers directly to your email)
-  // How to get your free key:
-  // 1. Visit https://web3forms.com
-  // 2. Enter your email: magicianbusiness30@gmail.com
-  // 3. Check your inbox and paste the received Access Key below.
+  // Direct delivery to magicianbusiness30@gmail.com via FormSubmit AJAX API
   forms: {
-    service: "web3forms", // "web3forms" or "formsubmit"
-    web3formsAccessKey: "00fdf361-5f5e-48fc-98f9-4044f679a93d",
+    service: "formsubmit", // "formsubmit" routes directly to targetEmail
+    targetEmail: "magicianbusiness30@gmail.com",
     fallbackEmail: "magicianbusiness30@gmail.com",
     // Cooldown in seconds before allowing another submission from the same client
     cooldownSeconds: 60,

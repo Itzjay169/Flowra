@@ -450,38 +450,30 @@ function initSuggestionForm() {
     const originalBtnText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<span>Sending... ⏳</span>';
 
-    const accessKey = FlowraConfig.forms.web3formsAccessKey;
-    const isConfiguredKey = accessKey && !accessKey.includes('YOUR_WEB3FORMS');
+    const targetEmail = FlowraConfig.forms?.targetEmail || FlowraConfig.developer?.email || 'magicianbusiness30@gmail.com';
 
     try {
-      if (!isConfiguredKey) {
-        // If developer hasn't pasted the free Web3Forms key yet, trigger graceful fallback
-        throw new Error('Web3Forms access key not yet configured in website/config.js');
-      }
-
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
         body: JSON.stringify({
-          access_key: accessKey,
-          subject: `[Flowra ${type}] from ${name} (v${version})`,
-          from_name: `Flowra User (${name})`,
-          replyto: email !== 'Not provided' ? email : FlowraConfig.developer.email,
+          _subject: `[Flowra ${type}] Suggestion from ${name} (v${version})`,
           name: name,
           email: email,
           type: type,
           version: version,
           message: message,
+          _replyto: email !== 'Not provided' ? email : targetEmail,
         })
       });
 
       const result = await response.json();
-      if (response.ok && result.success) {
+      if (response.ok && (result.success === 'true' || result.success === true || result.message?.toLowerCase().includes('success'))) {
         showElement(alertSuccess);
-        alertSuccess.textContent = 'Thank you! Your suggestion was sent successfully. I appreciate your feedback!';
+        alertSuccess.textContent = `Thank you! Your suggestion was sent successfully to ${targetEmail}. We appreciate your feedback!`;
         localStorage.setItem('flowra_suggestion_timestamp', Date.now().toString());
         form.reset();
         if (charCounter) charCounter.textContent = '0 / 1000';
@@ -493,8 +485,7 @@ function initSuggestionForm() {
       showElement(alertError);
       alertError.innerHTML = `
         <strong>Could not send automatically.</strong><br>
-        ${isConfiguredKey ? 'Service error.' : 'Web3Forms API key is not configured yet in config.js.'}<br>
-        You can still send it directly using the buttons below:
+        You can still send it directly to <strong>${targetEmail}</strong> using the buttons below:
       `;
       showElement(fallbackActions);
     } finally {
