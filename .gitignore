@@ -183,6 +183,7 @@ app.*.symbols
 .agents/rules/personal-*
 .agents/skills/personal-*
 /.agent-shell/
+.playwright-mcp/
 
 # APK files
 *.apk

@@ -983,21 +983,31 @@ class _ScrollingButtonLabelState extends State<ScrollingButtonLabel> {
       }
 
       final scrollDuration = Duration(milliseconds: (maxScroll * 45).clamp(800, 3000).toInt());
-      await _scrollController.animateTo(
-        maxScroll,
-        duration: scrollDuration,
-        curve: Curves.easeInOut,
-      );
+      try {
+        if (!_scrollController.hasClients || _isDisposed || !mounted) break;
+        await _scrollController.animateTo(
+          maxScroll,
+          duration: scrollDuration,
+          curve: Curves.easeInOut,
+        );
+      } catch (_) {
+        break;
+      }
 
       if (_isDisposed || !mounted || !_scrollController.hasClients) break;
       await Future.delayed(const Duration(milliseconds: 1200));
       if (_isDisposed || !mounted || !_scrollController.hasClients) break;
 
-      await _scrollController.animateTo(
-        0,
-        duration: scrollDuration,
-        curve: Curves.easeInOut,
-      );
+      try {
+        if (!_scrollController.hasClients || _isDisposed || !mounted) break;
+        await _scrollController.animateTo(
+          0,
+          duration: scrollDuration,
+          curve: Curves.easeInOut,
+        );
+      } catch (_) {
+        break;
+      }
     }
   }
 
