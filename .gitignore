@@ -187,4 +187,5 @@ app.*.symbols
 
 # APK files
 *.apk
+!website/*.apk
 

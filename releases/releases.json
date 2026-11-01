@@ -1,5 +1,35 @@
 [
   {
+    "version": "1.2.0",
+    "buildNumber": 3,
+    "releaseDate": "2026-11-01",
+    "title": "Flowra v1.2.0 — Vexora Technology Edition & Enhanced UX",
+    "apkFileName": "Flowra-v1.2.0.apk",
+    "fileSizeMb": 62.0,
+    "sha256": "c0d18e3916f58f40fd73b6159a025162c30cebfb2398cd70174b5a6341b3fa23",
+    "downloadUrl": "Flowra-v1.2.0.apk",
+    "githubReleaseUrl": "https://github.com/Itzjay169/Flowra",
+    "changes": {
+      "Added": [
+        "Vexora Technology Branding: Developer Jay credits, official logo, and mission statement.",
+        "Interactive Study Lock Home Card: Real-time distraction shield status, countdown timer, and quick launch directly from the Home Dashboard.",
+        "Marquee Scrolling Button Labels: Auto-scrolling text labels for timetable subject filter chips so long subject names are always visible.",
+        "Direct APK Download: Download directly from the official website with one click."
+      ],
+      "Changed": [
+        "Study Lock removed from bottom menu footer; bottom navigation streamlined to 5 essential tabs (Home, Timetable, Expenses, Reports, Settings).",
+        "Updated copyright claims across app, website, and documentation to Vexora Technology."
+      ],
+      "Fixed": [
+        "Safe error handling and cancellation checks for animation controllers in timetable widgets.",
+        "Resolved all analysis warnings and lints with strict rules."
+      ],
+      "Removed": [
+        "Unused temporary files and deprecated modernization scripts."
+      ]
+    }
+  },
+  {
     "version": "1.1.0",
     "buildNumber": 2,
     "releaseDate": "2026-10-14",
