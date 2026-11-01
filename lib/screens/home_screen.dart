@@ -8,10 +8,12 @@ import 'package:provider/provider.dart';
 import 'package:flowra/providers/task_provider.dart';
 import 'package:flowra/providers/expense_provider.dart';
 import 'package:flowra/providers/settings_provider.dart';
+import 'package:flowra/providers/study_lock_provider.dart';
 import 'package:flowra/utils/helpers.dart';
 import 'package:flowra/utils/theme.dart';
 import 'package:flowra/widgets/common_widgets.dart';
 import 'package:flowra/screens/study_focus_screen.dart';
+import 'package:flowra/screens/study_lock_screen.dart';
 import 'package:flowra/screens/add_edit_task_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -141,6 +143,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Study streak banner
                   _buildStreakBanner(context),
 
+                  // Study Lock card (Exclusive to Home Page)
+                  _buildStudyLockCard(context),
+
                   // Next task card
                   _buildNextTaskCard(context),
 
@@ -237,6 +242,220 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStudyLockCard(BuildContext context) {
+    StudyLockProvider? lockProvider;
+    try {
+      lockProvider = context.watch<StudyLockProvider>();
+    } catch (_) {
+      // Fallback if not available in testing environment
+    }
+
+    final isLockActive = lockProvider?.isLockActive ?? false;
+    final blockedCount = lockProvider?.activeBlockedApps.length ?? 0;
+    final masterEnabled = lockProvider?.masterEnabled ?? true;
+    final remainingSecs = lockProvider?.remainingSeconds ?? 0;
+    final sessionTitle = lockProvider?.currentTaskTitle ?? 'Study Session';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final minutes = remainingSecs ~/ 60;
+    final seconds = remainingSecs % 60;
+    final timeStr =
+        '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const StudyLockScreen()),
+          );
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              colors: isLockActive
+                  ? [
+                      Colors.deepPurple.withValues(alpha: 0.16),
+                      Colors.indigo.withValues(alpha: 0.06),
+                    ]
+                  : [
+                      AppTheme.primaryIndigo.withValues(alpha: 0.08),
+                      AppTheme.studyBlue.withValues(alpha: 0.03),
+                    ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            border: Border.all(
+              color: isLockActive
+                  ? Colors.deepPurpleAccent.withValues(alpha: 0.4)
+                  : AppTheme.primaryIndigo.withValues(alpha: 0.18),
+              width: 1.5,
+            ),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: (isLockActive
+                              ? Colors.deepPurple
+                              : AppTheme.primaryIndigo)
+                          .withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      isLockActive
+                          ? Icons.lock_clock_rounded
+                          : Icons.shield_rounded,
+                      color: isLockActive
+                          ? Colors.deepPurpleAccent
+                          : AppTheme.primaryIndigo,
+                      size: 26,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              isLockActive
+                                  ? 'Study Lock Active 🛡️'
+                                  : 'Study Lock Distraction Shield',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            if (isLockActive) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Colors.redAccent,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          isLockActive
+                              ? 'Blocking distractions for: $sessionTitle'
+                              : 'Block social apps & stay focused during study sessions',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? Colors.grey[400] : Colors.grey[600],
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 14,
+                    color: Colors.grey,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: (masterEnabled
+                              ? AppTheme.successGreen
+                              : Colors.grey)
+                          .withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          masterEnabled
+                              ? Icons.check_circle_rounded
+                              : Icons.pause_circle_rounded,
+                          size: 13,
+                          color: masterEnabled
+                              ? AppTheme.successGreen
+                              : Colors.grey,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          masterEnabled ? 'Shield Active' : 'Shield Paused',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: masterEnabled
+                                ? AppTheme.successGreen
+                                : Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryIndigo.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '$blockedCount apps locked',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.primaryIndigo,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  if (isLockActive)
+                    Text(
+                      timeStr,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.deepPurpleAccent,
+                      ),
+                    )
+                  else
+                    Text(
+                      'Manage Shield →',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.studyBlue,
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -474,6 +693,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const StudyFocusScreen()),
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _QuickActionButton(
+              icon: Icons.shield_rounded,
+              label: 'Study Lock',
+              color: Colors.deepPurple,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const StudyLockScreen()),
                 );
               },
             ),

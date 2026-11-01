@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.flowra.flowra">
 
     <!-- Notification permissions -->
@@ -10,13 +11,22 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
+    <!-- Study Lock distraction blocker permissions -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
     <!-- For CSV export -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
-    <!-- For opening donation link -->
+    <!-- For opening donation link / external web links -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -45,6 +55,40 @@
             </intent-filter>
         </activity>
 
+        <!-- Study Lock full-screen distraction blocker overlay activity -->
+        <activity
+            android:name=".StudyLockOverlayActivity"
+            android:exported="false"
+            android:theme="@style/Theme.StudyLockOverlay"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true" />
+
+        <!-- Study Lock Foreground Service -->
+        <service
+            android:name=".StudyLockService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Distraction blocker during scheduled study and focus sessions" />
+        </service>
+
+        <!-- Study Lock Accessibility Service Fallback -->
+        <service
+            android:name=".StudyLockAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
         <!-- Scheduled notification receiver (required for alarms and scheduled reminders) -->
         <receiver
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
@@ -71,12 +115,34 @@
             android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver"
             android:exported="false" />
 
+        <!-- Study Lock notification action receiver -->
+        <receiver
+            android:name=".StudyLockActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.flowra.flowra.ACTION_ACCEPT_STUDY_LOCK" />
+                <action android:name="com.flowra.flowra.ACTION_REJECT_STUDY_LOCK" />
+                <action android:name="com.flowra.flowra.ACTION_END_STUDY_LOCK" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Study Lock boot receiver -->
+        <receiver
+            android:name=".StudyLockBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
 
-    <!-- Required for opening external payment links -->
+    <!-- Required for opening external payment links and querying launcher apps -->
     <queries>
         <intent>
             <action android:name="android.intent.action.VIEW" />
@@ -85,6 +151,10 @@
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
         </intent>
     </queries>
 </manifest>

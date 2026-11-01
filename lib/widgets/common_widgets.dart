@@ -882,3 +882,152 @@ class BudgetProgressBar extends StatelessWidget {
     );
   }
 }
+
+// ─── Animated Status Badge ──────────────────────────────────────────────
+
+class AnimatedStatusBadge extends StatelessWidget {
+  final String status;
+  final bool isCompact;
+
+  const AnimatedStatusBadge({
+    super.key,
+    required this.status,
+    this.isCompact = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final (color, icon) = switch (status) {
+      'Completed' => (AppTheme.successGreen, Icons.check_circle_rounded),
+      'Running' => (AppTheme.studyBlue, Icons.play_circle_rounded),
+      'Missed' => (AppTheme.dangerRed, Icons.cancel_rounded),
+      'Skipped' => (Colors.grey, Icons.skip_next_rounded),
+      _ => (AppTheme.primaryIndigo, Icons.schedule_rounded),
+    };
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      padding: EdgeInsets.symmetric(
+        horizontal: isCompact ? 8 : 10,
+        vertical: isCompact ? 3 : 5,
+      ),
+      decoration: BoxDecoration(
+        color: color.withAlpha(25),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withAlpha(80), width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: isCompact ? 12 : 14, color: color),
+          const SizedBox(width: 4),
+          Text(
+            status,
+            style: TextStyle(
+              fontSize: isCompact ? 10 : 12,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Scrolling Button Label ──────────────────────────────────────────────
+
+/// A button label that supports horizontal scrolling and auto-marquee when text
+/// exceeds the available button width, ensuring full button names are always readable.
+class ScrollingButtonLabel extends StatefulWidget {
+  final String text;
+  final TextStyle? style;
+  final double maxWidth;
+  final bool autoScroll;
+
+  const ScrollingButtonLabel({
+    super.key,
+    required this.text,
+    this.style,
+    this.maxWidth = 100.0,
+    this.autoScroll = true,
+  });
+
+  @override
+  State<ScrollingButtonLabel> createState() => _ScrollingButtonLabelState();
+}
+
+class _ScrollingButtonLabelState extends State<ScrollingButtonLabel> {
+  final ScrollController _scrollController = ScrollController();
+  bool _isDisposed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final isTest = WidgetsBinding.instance.runtimeType.toString().contains('Test');
+    if (widget.autoScroll && !isTest) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _startAutoScrollLoop());
+    }
+  }
+
+  Future<void> _startAutoScrollLoop() async {
+    while (!_isDisposed && mounted) {
+      await Future.delayed(const Duration(milliseconds: 1800));
+      if (_isDisposed || !mounted || !_scrollController.hasClients) break;
+
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      if (maxScroll <= 0) {
+        await Future.delayed(const Duration(seconds: 2));
+        continue;
+      }
+
+      final scrollDuration = Duration(milliseconds: (maxScroll * 45).clamp(800, 3000).toInt());
+      await _scrollController.animateTo(
+        maxScroll,
+        duration: scrollDuration,
+        curve: Curves.easeInOut,
+      );
+
+      if (_isDisposed || !mounted || !_scrollController.hasClients) break;
+      await Future.delayed(const Duration(milliseconds: 1200));
+      if (_isDisposed || !mounted || !_scrollController.hasClients) break;
+
+      await _scrollController.animateTo(
+        0,
+        duration: scrollDuration,
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: widget.text,
+      waitDuration: const Duration(milliseconds: 500),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: widget.maxWidth),
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Text(
+            widget.text,
+            style: widget.style,
+            maxLines: 1,
+            softWrap: false,
+          ),
+        ),
+      ),
+    );
+  }
+}
+

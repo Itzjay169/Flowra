@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 import 'package:flowra/models/task.dart';
 import 'package:flowra/models/expense.dart';
 import 'package:flowra/models/budget.dart';
+import 'package:flowra/models/study_lock.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -37,7 +38,7 @@ class DatabaseService {
 
     return openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -59,7 +60,8 @@ class DatabaseService {
         notes TEXT,
         status TEXT NOT NULL DEFAULT 'Upcoming',
         created_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL
+        updated_at TEXT NOT NULL,
+        enable_study_lock INTEGER NOT NULL DEFAULT 0
       )
     ''');
 
@@ -93,6 +95,42 @@ class DatabaseService {
       )
     ''');
 
+    await db.execute('''
+      CREATE TABLE blocked_apps (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        package_name TEXT NOT NULL UNIQUE,
+        app_name TEXT NOT NULL,
+        is_blocked INTEGER NOT NULL DEFAULT 1,
+        category TEXT,
+        created_at TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE study_lock_sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        task_id INTEGER,
+        task_title TEXT NOT NULL,
+        start_time TEXT NOT NULL,
+        end_time TEXT,
+        planned_duration_minutes INTEGER NOT NULL,
+        actual_duration_minutes INTEGER NOT NULL DEFAULT 0,
+        status TEXT NOT NULL,
+        blocked_attempts_count INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE study_lock_attempts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_id INTEGER,
+        package_name TEXT NOT NULL,
+        app_name TEXT,
+        timestamp TEXT NOT NULL
+      )
+    ''');
+
     // Create indexes for performance
     await db.execute('CREATE INDEX idx_tasks_date ON tasks(date)');
     await db.execute('CREATE INDEX idx_tasks_status ON tasks(status)');
@@ -101,11 +139,100 @@ class DatabaseService {
     await db.execute('CREATE INDEX idx_budgets_month ON budgets(month)');
     await db.execute(
         'CREATE UNIQUE INDEX idx_budgets_cat_month ON budgets(category, month)');
+    await db.execute('CREATE INDEX idx_lock_sessions_task_id ON study_lock_sessions(task_id)');
+    await db.execute('CREATE INDEX idx_lock_sessions_status ON study_lock_sessions(status)');
+    await db.execute('CREATE INDEX idx_blocked_apps_pkg ON blocked_apps(package_name)');
+
+    // Seed default blocked applications
+    await _seedDefaultBlockedApps(db);
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
       await db.execute('ALTER TABLE expenses ADD COLUMN time TEXT');
+    }
+    if (oldVersion < 3) {
+      try {
+        await db.execute(
+            'ALTER TABLE tasks ADD COLUMN enable_study_lock INTEGER NOT NULL DEFAULT 0');
+      } catch (_) {}
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS blocked_apps (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          package_name TEXT NOT NULL UNIQUE,
+          app_name TEXT NOT NULL,
+          is_blocked INTEGER NOT NULL DEFAULT 1,
+          category TEXT,
+          created_at TEXT NOT NULL
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS study_lock_sessions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          task_id INTEGER,
+          task_title TEXT NOT NULL,
+          start_time TEXT NOT NULL,
+          end_time TEXT,
+          planned_duration_minutes INTEGER NOT NULL,
+          actual_duration_minutes INTEGER NOT NULL DEFAULT 0,
+          status TEXT NOT NULL,
+          blocked_attempts_count INTEGER NOT NULL DEFAULT 0,
+          created_at TEXT NOT NULL
+        )
+      ''');
+
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS study_lock_attempts (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          session_id INTEGER,
+          package_name TEXT NOT NULL,
+          app_name TEXT,
+          timestamp TEXT NOT NULL
+        )
+      ''');
+
+      try {
+        await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_lock_sessions_task_id ON study_lock_sessions(task_id)');
+        await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_lock_sessions_status ON study_lock_sessions(status)');
+        await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_blocked_apps_pkg ON blocked_apps(package_name)');
+      } catch (_) {}
+
+      await _seedDefaultBlockedApps(db);
+    }
+  }
+
+  Future<void> _seedDefaultBlockedApps(Database db) async {
+    final now = DateTime.now().toIso8601String();
+    final defaults = [
+      {'package_name': 'com.google.android.youtube', 'app_name': 'YouTube', 'category': 'Entertainment'},
+      {'package_name': 'com.instagram.android', 'app_name': 'Instagram', 'category': 'Social'},
+      {'package_name': 'com.facebook.katana', 'app_name': 'Facebook', 'category': 'Social'},
+      {'package_name': 'com.whatsapp', 'app_name': 'WhatsApp', 'category': 'Communication'},
+      {'package_name': 'com.snapchat.android', 'app_name': 'Snapchat', 'category': 'Social'},
+      {'package_name': 'org.telegram.messenger', 'app_name': 'Telegram', 'category': 'Communication'},
+      {'package_name': 'com.twitter.android', 'app_name': 'X / Twitter', 'category': 'Social'},
+      {'package_name': 'com.reddit.frontpage', 'app_name': 'Reddit', 'category': 'Social'},
+      {'package_name': 'com.netflix.mediaclient', 'app_name': 'Netflix', 'category': 'Entertainment'},
+      {'package_name': 'com.discord', 'app_name': 'Discord', 'category': 'Social'},
+    ];
+
+    for (final item in defaults) {
+      await db.insert(
+        'blocked_apps',
+        {
+          'package_name': item['package_name'],
+          'app_name': item['app_name'],
+          'is_blocked': 1,
+          'category': item['category'],
+          'created_at': now,
+        },
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
     }
   }
 
@@ -509,161 +636,106 @@ class DatabaseService {
     return maps.first['value'] as String?;
   }
 
-  /// Seed realistic student data for quick demonstration
-  Future<void> seedSampleData() async {
-    final now = DateTime.now();
-    final today =
-        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-    final nowIso = now.toIso8601String();
+  // ─── Study Lock Operations ──────────────────────────────────────────
 
-    final sampleTasks = [
-      Task(
-        title: 'Calculus & Linear Algebra',
-        subject: 'Study',
-        startTime: '09:00',
-        endTime: '10:30',
-        date: today,
-        priority: 'Important',
-        notificationType: 'Sound + vibration',
-        notes: 'Chapter 5: Eigenvalues and Vector Spaces',
-        status: 'Completed',
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      ),
-      Task(
-        title: 'Data Structures Lecture',
-        subject: 'Class',
-        startTime: '11:00',
-        endTime: '12:30',
-        date: today,
-        priority: 'Normal',
-        notificationType: 'Sound + vibration',
-        notes: 'Binary search trees and AVL trees balance',
-        status: 'Completed',
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      ),
-      Task(
-        title: 'Mobile App Project Lab',
-        subject: 'Assignment',
-        startTime: '14:00',
-        endTime: '16:00',
-        date: today,
-        priority: 'Critical',
-        notificationType: 'Alarm-style reminder',
-        notes: 'Finalize local SQLite integration and unit test suite',
-        status: 'Upcoming',
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      ),
-      Task(
-        title: 'Machine Learning Revision',
-        subject: 'Revision',
-        startTime: '17:00',
-        endTime: '18:30',
-        date: today,
-        priority: 'Normal',
-        notificationType: 'Sound + vibration',
-        notes: 'Review Gradient Descent formulas',
-        status: 'Upcoming',
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      ),
-      Task(
-        title: 'Evening Workout & Cardio',
-        subject: 'Exercise',
-        startTime: '19:00',
-        endTime: '20:00',
-        date: today,
-        priority: 'Normal',
-        notificationType: 'Sound + vibration',
-        notes: 'Campus gym session',
-        status: 'Upcoming',
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      ),
-    ];
+  Future<List<BlockedApp>> getBlockedApps() async {
+    final db = await database;
+    final maps = await db.query('blocked_apps', orderBy: 'app_name ASC');
+    return maps.map((m) => BlockedApp.fromMap(m)).toList();
+  }
 
-    for (final task in sampleTasks) {
-      await insertTask(task);
+  Future<int> insertBlockedApp(BlockedApp app) async {
+    final db = await database;
+    return db.insert(
+      'blocked_apps',
+      app.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<int> updateBlockedApp(BlockedApp app) async {
+    final db = await database;
+    return db.update(
+      'blocked_apps',
+      app.toMap(),
+      where: 'id = ?',
+      whereArgs: [app.id],
+    );
+  }
+
+  Future<int> toggleBlockedApp(int id, bool isBlocked) async {
+    final db = await database;
+    return db.update(
+      'blocked_apps',
+      {'is_blocked': isBlocked ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> deleteBlockedApp(int id) async {
+    final db = await database;
+    return db.delete('blocked_apps', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<int> insertStudyLockSession(StudyLockSession session) async {
+    final db = await database;
+    return db.insert('study_lock_sessions', session.toMap());
+  }
+
+  Future<int> updateStudyLockSession(StudyLockSession session) async {
+    final db = await database;
+    return db.update(
+      'study_lock_sessions',
+      session.toMap(),
+      where: 'id = ?',
+      whereArgs: [session.id],
+    );
+  }
+
+  Future<List<StudyLockSession>> getStudyLockSessions({int limit = 50}) async {
+    final db = await database;
+    final maps = await db.query(
+      'study_lock_sessions',
+      orderBy: 'created_at DESC',
+      limit: limit,
+    );
+    return maps.map((m) => StudyLockSession.fromMap(m)).toList();
+  }
+
+  Future<StudyLockSession?> getStudyLockSessionById(int id) async {
+    final db = await database;
+    final maps = await db.query(
+      'study_lock_sessions',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    if (maps.isEmpty) return null;
+    return StudyLockSession.fromMap(maps.first);
+  }
+
+  Future<int> recordStudyLockAttempt(StudyLockAttempt attempt) async {
+    final db = await database;
+    final attemptId = await db.insert('study_lock_attempts', attempt.toMap());
+    if (attempt.sessionId != null) {
+      await db.rawUpdate('''
+        UPDATE study_lock_sessions 
+        SET blocked_attempts_count = blocked_attempts_count + 1 
+        WHERE id = ?
+      ''', [attempt.sessionId]);
     }
+    return attemptId;
+  }
 
-    final sampleExpenses = [
-      Expense(
-        amount: 120.0,
-        category: 'Food',
-        note: 'Cafeteria Lunch',
-        paymentMethod: 'UPI',
-        date: today,
-        time: '12:45',
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      ),
-      Expense(
-        amount: 500.0,
-        category: 'Travel',
-        note: 'Monthly Metro Card Reload',
-        paymentMethod: 'UPI',
-        date: today,
-        time: '08:30',
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      ),
-      Expense(
-        amount: 450.0,
-        category: 'Books / Supplies',
-        note: 'Reference Textbook & Stationery',
-        paymentMethod: 'Card',
-        date: today,
-        time: '15:10',
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      ),
-      Expense(
-        amount: 299.0,
-        category: 'Recharge / Internet',
-        note: 'Monthly 5G Data Pack',
-        paymentMethod: 'UPI',
-        date: today,
-        time: '10:15',
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      ),
-      Expense(
-        amount: 85.0,
-        category: 'Food',
-        note: 'Coffee & Snacks',
-        paymentMethod: 'Cash',
-        date: today,
-        time: '17:20',
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      ),
-      Expense(
-        amount: 160.0,
-        category: 'Books / Supplies',
-        note: 'Notebooks & Pen Set',
-        paymentMethod: 'Cash',
-        date: today,
-        time: '14:05',
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      ),
-      Expense(
-        amount: 220.0,
-        category: 'Entertainment',
-        note: 'Weekend Movie Ticket',
-        paymentMethod: 'UPI',
-        date: today,
-        time: '19:40',
-        createdAt: nowIso,
-        updatedAt: nowIso,
-      ),
-    ];
-
-    for (final expense in sampleExpenses) {
-      await insertExpense(expense);
-    }
+  Future<List<StudyLockAttempt>> getStudyLockAttempts(int sessionId) async {
+    final db = await database;
+    final maps = await db.query(
+      'study_lock_attempts',
+      where: 'session_id = ?',
+      whereArgs: [sessionId],
+      orderBy: 'timestamp DESC',
+    );
+    return maps.map((m) => StudyLockAttempt.fromMap(m)).toList();
   }
 
   Future<void> clearAllData() async {
@@ -672,6 +744,10 @@ class DatabaseService {
     await db.delete('expenses');
     await db.delete('budgets');
     await db.delete('settings');
+    await db.delete('study_lock_sessions');
+    await db.delete('study_lock_attempts');
+    await db.delete('blocked_apps');
+    await _seedDefaultBlockedApps(db);
   }
 
   Future<void> close() async {

@@ -8,11 +8,14 @@ import 'package:provider/provider.dart';
 import 'package:flowra/providers/task_provider.dart';
 import 'package:flowra/providers/expense_provider.dart';
 import 'package:flowra/providers/settings_provider.dart';
+import 'package:flowra/providers/study_lock_provider.dart';
+import 'package:flowra/services/app_version_service.dart';
 import 'package:flowra/services/notification_service.dart';
 import 'package:flowra/services/settings_service.dart';
 import 'package:flowra/screens/onboarding_screen.dart';
 import 'package:flowra/screens/home_screen.dart';
 import 'package:flowra/screens/timetable_screen.dart';
+import 'package:flowra/screens/study_lock_screen.dart';
 import 'package:flowra/screens/expenses_screen.dart';
 import 'package:flowra/screens/reports_screen.dart';
 import 'package:flowra/screens/settings_screen.dart';
@@ -32,6 +35,8 @@ void main() async {
   ]);
 
   // Initialize services
+  await AppVersionService.initialize();
+
   final settingsService = SettingsService();
   await settingsService.initialize();
 
@@ -44,6 +49,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => TaskProvider()),
         ChangeNotifierProvider(create: (_) => ExpenseProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => StudyLockProvider()),
       ],
       child: const FlowraApp(),
     ),
@@ -112,6 +118,35 @@ class _FlowraAppState extends State<FlowraApp> {
       case 'done':
         taskProvider.completeTask(taskId);
         break;
+      case 'accept_study_lock':
+        taskProvider.startTask(taskId);
+        taskProvider.loadTodayTasks().then((_) {
+          final task = taskProvider.todayTasks
+              .where((t) => t.id == taskId)
+              .firstOrNull;
+          if (task != null && mounted) {
+            context.read<StudyLockProvider>().startStudyLock(
+                  taskId: task.id,
+                  taskTitle: task.title,
+                  durationMinutes: task.durationMinutes,
+                );
+          }
+        });
+        break;
+      case 'reject_study_lock':
+        taskProvider.loadTodayTasks().then((_) {
+          final task = taskProvider.todayTasks
+              .where((t) => t.id == taskId)
+              .firstOrNull;
+          if (task != null && mounted) {
+            context.read<StudyLockProvider>().recordSkippedSession(
+                  taskId: task.id,
+                  taskTitle: task.title,
+                  durationMinutes: task.durationMinutes,
+                );
+          }
+        });
+        break;
     }
   }
 
@@ -120,6 +155,14 @@ class _FlowraAppState extends State<FlowraApp> {
     final parts = payload.split(':');
     if (parts.length < 2) return;
     final taskId = int.tryParse(parts[1]);
+
+    if (parts[0] == 'studylock') {
+      if (_navigatorKey.currentState != null) {
+        _navigatorKey.currentState!.pushNamed('/study-lock');
+      }
+      return;
+    }
+
     if (taskId == null) return;
 
     final taskProvider = context.read<TaskProvider>();
@@ -158,6 +201,7 @@ class _FlowraAppState extends State<FlowraApp> {
         '/add-task': (_) => const AddEditTaskScreen(),
         '/add-expense': (_) => const AddEditExpenseScreen(),
         '/focus': (_) => const StudyFocusScreen(),
+        '/study-lock': (_) => const StudyLockScreen(),
       },
     );
   }

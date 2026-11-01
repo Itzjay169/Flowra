@@ -18,6 +18,7 @@ class Task {
   final String status;
   final String createdAt;
   final String updatedAt;
+  final bool enableStudyLock;
 
   const Task({
     this.id,
@@ -34,6 +35,7 @@ class Task {
     this.status = 'Upcoming',
     required this.createdAt,
     required this.updatedAt,
+    this.enableStudyLock = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -52,6 +54,7 @@ class Task {
       'status': status,
       'created_at': createdAt,
       'updated_at': updatedAt,
+      'enable_study_lock': enableStudyLock ? 1 : 0,
     };
   }
 
@@ -72,6 +75,7 @@ class Task {
       status: map['status'] as String? ?? AppConstants.statusUpcoming,
       createdAt: map['created_at'] as String,
       updatedAt: map['updated_at'] as String,
+      enableStudyLock: (map['enable_study_lock'] as int? ?? 0) == 1,
     );
   }
 
@@ -90,6 +94,7 @@ class Task {
     String? status,
     String? createdAt,
     String? updatedAt,
+    bool? enableStudyLock,
   }) {
     return Task(
       id: id ?? this.id,
@@ -106,6 +111,7 @@ class Task {
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      enableStudyLock: enableStudyLock ?? this.enableStudyLock,
     );
   }
 

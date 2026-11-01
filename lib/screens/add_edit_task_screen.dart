@@ -35,6 +35,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
   List<int> _customDays = [];
   String _priority = 'Normal';
   String _notificationType = 'Sound + vibration';
+  bool _enableStudyLock = false;
   bool _isSaving = false;
 
   bool get isEditing => widget.task != null;
@@ -70,6 +71,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
       _repeatType = t.repeatType;
       _priority = t.priority;
       _notificationType = t.notificationType;
+      _enableStudyLock = t.enableStudyLock;
       if (t.repeatDays != null) {
         _customDays = t.repeatDays!
             .split(',')
@@ -153,6 +155,7 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
       status: widget.task?.status ?? 'Upcoming',
       createdAt: widget.task?.createdAt ?? now,
       updatedAt: now,
+      enableStudyLock: _enableStudyLock,
     );
 
     // Check for overlaps
@@ -280,6 +283,59 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
               },
             ),
             const SizedBox(height: 16),
+
+            // Study Lock distraction blocker toggle
+            if (AppConstants.studyLockSubjects.contains(_subject)) ...[
+              Card(
+                margin: EdgeInsets.zero,
+                elevation: 0,
+                color: _enableStudyLock
+                    ? AppTheme.primaryIndigo.withAlpha(25)
+                    : Theme.of(context).cardColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(
+                    color: _enableStudyLock
+                        ? AppTheme.primaryIndigo.withAlpha(120)
+                        : Theme.of(context).dividerColor.withAlpha(70),
+                  ),
+                ),
+                child: SwitchListTile.adaptive(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  secondary: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: _enableStudyLock
+                          ? AppTheme.primaryIndigo.withAlpha(40)
+                          : Colors.grey.withAlpha(30),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.lock_clock_rounded,
+                      color: _enableStudyLock
+                          ? AppTheme.primaryIndigo
+                          : Colors.grey,
+                      size: 22,
+                    ),
+                  ),
+                  title: const Text(
+                    'Enable Study Lock when task starts',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                  subtitle: const Text(
+                    'Blocks distracting apps with full-screen focus shield',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  value: _enableStudyLock,
+                  onChanged: (v) => setState(() => _enableStudyLock = v),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
 
             // Date picker
             InkWell(

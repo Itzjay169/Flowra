@@ -86,12 +86,23 @@ unlinked_spec.ds
 **/android/captures/
 **/android/gradlew
 **/android/gradlew.bat
-**/android/**/GeneratedPluginRegistrant.java
+# Android & Keystore Security
 **/android/key.properties
+key.properties
+**/key.properties
 *.jks
+*.keystore
+*.p12
+*.key
 *.apk
+*.aab
+releases/*.apk
+releases/*.aab
+!releases/releases.json
+**/local.properties
 local.properties
 **/.cxx/
+**/GeneratedPluginRegistrant.java
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
@@ -172,3 +183,7 @@ app.*.symbols
 .agents/rules/personal-*
 .agents/skills/personal-*
 /.agent-shell/
+
+# APK files
+*.apk
+

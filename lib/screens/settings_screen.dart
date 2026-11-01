@@ -10,6 +10,8 @@ import 'package:flowra/providers/expense_provider.dart';
 import 'package:flowra/services/database_service.dart';
 import 'package:flowra/services/export_service.dart';
 import 'package:flowra/screens/donation_screen.dart';
+import 'package:flowra/screens/study_lock_screen.dart';
+import 'package:flowra/services/app_version_service.dart';
 import 'package:flowra/utils/constants.dart';
 import 'package:flowra/utils/helpers.dart';
 import 'package:flowra/utils/theme.dart';
@@ -125,6 +127,19 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
 
+          // ─── Study Lock ─────────────────────────────────────────
+          _SectionTitle('Distraction Blocker'),
+          _SettingsTile(
+            icon: Icons.lock_clock_rounded,
+            title: 'Study Lock',
+            subtitle: 'Configure blocked apps & full-screen focus shield',
+            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const StudyLockScreen()),
+            ),
+          ),
+
           // ─── Profile ────────────────────────────────────────────
           _SectionTitle('Profile'),
           _SettingsTile(
@@ -179,12 +194,6 @@ class SettingsScreen extends StatelessWidget {
           // ─── Data Management ────────────────────────────────────
           _SectionTitle('Data'),
           _SettingsTile(
-            icon: Icons.auto_awesome_rounded,
-            title: 'Load Sample Data',
-            subtitle: 'Populate sample timetable and expenses',
-            onTap: () => _loadSampleData(context),
-          ),
-          _SettingsTile(
             icon: Icons.download_rounded,
             title: 'Export Expenses as CSV',
             subtitle: 'Save to phone storage',
@@ -210,11 +219,19 @@ class SettingsScreen extends StatelessWidget {
               MaterialPageRoute(builder: (_) => const DonationScreen()),
             ),
           ),
-          _SettingsTile(
-            icon: Icons.info_rounded,
-            title: 'About Flowra',
-            subtitle: 'v${AppConstants.appVersion}',
-            onTap: () => _showAboutDialog(context),
+          FutureBuilder<String>(
+            future: AppVersionService.getFullVersionString(),
+            initialData: AppVersionService.currentVersionString,
+            builder: (context, snapshot) {
+              final versionStr =
+                  snapshot.data ?? AppVersionService.currentVersionString;
+              return _SettingsTile(
+                icon: Icons.info_rounded,
+                title: 'About Flowra',
+                subtitle: versionStr,
+                onTap: () => _showAboutDialog(context, versionStr),
+              );
+            },
           ),
         ],
       ),
@@ -411,47 +428,6 @@ class SettingsScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _loadSampleData(BuildContext context) async {
-    final taskProvider = context.read<TaskProvider>();
-    final expenseProvider = context.read<ExpenseProvider>();
-
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Load Sample Data'),
-        content: const Text(
-          'This will populate your app with sample timetable sessions and expense records.\n\nGreat for instantly testing all app features!',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style:
-                ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryIndigo),
-            child: const Text('Load Data'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true && context.mounted) {
-      await DatabaseService().seedSampleData();
-      await taskProvider.loadTodayTasks();
-      await expenseProvider.loadAll();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sample sessions and expenses loaded! 🎉'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
-  }
-
   Future<void> _clearData(BuildContext context) async {
     final taskProvider = context.read<TaskProvider>();
     final expenseProvider = context.read<ExpenseProvider>();
@@ -490,40 +466,77 @@ class SettingsScreen extends StatelessWidget {
     }
   }
 
-  void _showAboutDialog(BuildContext context) {
+  void _showAboutDialog(BuildContext context, [String? versionText]) {
+    final displayVersion =
+        versionText ?? AppVersionService.currentVersionString;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Row(
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: 42,
+              height: 42,
               decoration: BoxDecoration(
-                color: AppTheme.primaryIndigo.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(10),
+                color: AppTheme.primaryIndigo.withValues(alpha: 0.15),
               ),
-              child: const Icon(Icons.access_time_filled_rounded,
-                  color: AppTheme.primaryIndigo),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  AppConstants.vexoraLogoPath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const Icon(
+                    Icons.access_time_filled_rounded,
+                    color: AppTheme.primaryIndigo,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(width: 12),
-            const Text('Flowra'),
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Flowra', style: TextStyle(fontWeight: FontWeight.w800)),
+                Text(
+                  'By Vexora Technology',
+                  style: TextStyle(fontSize: 11, color: AppTheme.primaryIndigo, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Version ${AppConstants.appVersion}'),
-            const SizedBox(height: 12),
+            Text(displayVersion, style: const TextStyle(fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
             Text(
               AppConstants.appDescription,
               style: TextStyle(color: Colors.grey[600], height: 1.4),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryIndigo.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                'Made by Vexora Technology for students • Developed by Jay',
+                style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppTheme.primaryIndigo),
+              ),
+            ),
+            const SizedBox(height: 10),
             Text(
               '• 100% offline\n• No ads, no tracking\n• No account required\n• Your data stays on your phone',
               style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '© ${DateTime.now().year} Vexora Technology. Developed by Jay.',
+              style: TextStyle(fontSize: 11, color: Colors.grey[500]),
             ),
           ],
         ),

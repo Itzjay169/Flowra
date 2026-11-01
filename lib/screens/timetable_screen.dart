@@ -125,9 +125,10 @@ class _TimetableScreenState extends State<TimetableScreen> {
             ),
           ),
 
-          // Subject filter chips
+          // Subject filter chips with horizontal scrolling & marquee button labels
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Row(
               children: ['All', ...AppConstants.taskSubjects].map((subj) {
@@ -135,18 +136,22 @@ class _TimetableScreenState extends State<TimetableScreen> {
                 return Padding(
                   padding: const EdgeInsets.only(right: 6),
                   child: FilterChip(
-                    label: Text(subj),
+                    label: ScrollingButtonLabel(
+                      text: subj,
+                      maxWidth: 105,
+                      autoScroll: true,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight:
+                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color: isSelected ? AppTheme.primaryIndigo : null,
+                      ),
+                    ),
                     selected: isSelected,
                     onSelected: (_) =>
                         setState(() => _selectedSubject = subj),
                     selectedColor:
                         AppTheme.primaryIndigo.withValues(alpha: 0.2),
-                    labelStyle: TextStyle(
-                      fontSize: 12,
-                      fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? AppTheme.primaryIndigo : null,
-                    ),
                   ),
                 );
               }).toList(),

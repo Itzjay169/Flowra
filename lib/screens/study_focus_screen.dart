@@ -9,6 +9,7 @@ import 'package:flowra/models/task.dart';
 import 'package:flowra/providers/task_provider.dart';
 import 'package:flowra/utils/theme.dart';
 import 'package:flowra/widgets/common_widgets.dart';
+import 'package:flowra/widgets/celebration_dialog.dart';
 
 class StudyFocusScreen extends StatefulWidget {
   final Task? initialTask;
@@ -200,32 +201,16 @@ class _StudyFocusScreenState extends State<StudyFocusScreen> {
 
     if (!mounted) return;
 
-    await showDialog(
+    await showCelebrationDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.celebration_rounded, color: AppTheme.successGreen),
-            SizedBox(width: 8),
-            Text('Session Completed! 🎉'),
-          ],
-        ),
-        content: Text(
-          _selectedTask != null
-              ? 'Great job! You finished your focus session for "${_selectedTask!.title}".'
-              : 'Great job! You finished your $_selectedMinutes minute focus session.',
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.pop(context);
-            },
-            child: const Text('Done'),
-          ),
-        ],
-      ),
+      title: 'Session Completed! 🎉',
+      subtitle: _selectedTask != null
+          ? 'Great job! Finished focus session for "${_selectedTask!.title}".'
+          : 'Great job! You completed your $_selectedMinutes minute focus session.',
+      durationMinutes: _selectedMinutes,
+      onConfirm: () {
+        if (mounted) Navigator.pop(context);
+      },
     );
   }
 

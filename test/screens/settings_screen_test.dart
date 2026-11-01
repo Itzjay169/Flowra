@@ -52,7 +52,7 @@ void main() {
       expect(find.text('Theme'), findsOneWidget);
       expect(find.text('Currency'), findsOneWidget);
       expect(find.text('Monthly Budget'), findsOneWidget);
-      expect(find.text('Load Sample Data'), findsOneWidget);
+      expect(find.text('Load Sample Data'), findsNothing);
       expect(find.text('Export Expenses as CSV'), findsOneWidget);
       expect(find.text('Clear All Data'), findsOneWidget);
       expect(find.text('About the Developer'), findsOneWidget);

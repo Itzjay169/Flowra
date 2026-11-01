@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Flowra</string>
+    <string name="accessibility_service_description">Used by Flowra Study Lock strictly to detect when chosen distracting apps are opened during scheduled study sessions, returning you to your focus environment. Flowra operates 100% offline and never reads or stores your personal data.</string>
+</resources>

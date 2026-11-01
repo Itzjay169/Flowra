@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flowra/services/app_version_service.dart';
 import 'package:flowra/utils/constants.dart';
 import 'package:flowra/utils/theme.dart';
 import 'package:flowra/widgets/common_widgets.dart';
@@ -139,43 +140,58 @@ class _DonationScreenState extends State<DonationScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // ─── 1. Developer Intro Block ─────────────────────────
+            // ─── 1. Developer & Company Intro Block ──────────────
             Container(
-              width: 88,
-              height: 88,
+              width: 72,
+              height: 72,
               decoration: BoxDecoration(
-                color: AppTheme.primaryIndigo.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
+                color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primaryIndigo.withValues(alpha: 0.18),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
                 border: Border.all(
                   color: AppTheme.primaryIndigo.withValues(alpha: 0.25),
                   width: 2,
                 ),
               ),
-              child: const Center(
-                child: Icon(
-                  Icons.person_rounded,
-                  size: 52,
-                  color: AppTheme.primaryIndigo,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  AppConstants.vexoraLogoPath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Center(
+                    child: Icon(
+                      Icons.person_rounded,
+                      size: 40,
+                      color: AppTheme.primaryIndigo,
+                    ),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Text(
               AppConstants.developerName,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Text(
-              'Independent Developer & Creator of Flowra\nBuilding offline productivity tools.',
+              'Lead Developer • Vexora Technology\nMade by Vexora Technology to help students',
               style: TextStyle(
-                fontSize: 14,
-                color: isDark ? Colors.grey[400] : Colors.grey[600],
-                height: 1.4,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isDark ? const Color(0xFFA5B4FC) : AppTheme.primaryIndigo,
+                height: 1.35,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
             // ─── 2. Social Link Buttons ───────────────────────────
             Row(
@@ -397,16 +413,149 @@ class _DonationScreenState extends State<DonationScreen> {
               ),
             ],
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 28),
 
-            // ─── 4. Footer ────────────────────────────────────────
+            // ─── 4. About Vexora Technology Showcase Card ─────────
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(
+                    colors: isDark
+                        ? [
+                            AppTheme.primaryIndigo.withValues(alpha: 0.15),
+                            const Color(0xFF1E1B4B).withValues(alpha: 0.3),
+                          ]
+                        : [
+                            AppTheme.primaryIndigo.withValues(alpha: 0.05),
+                            AppTheme.studyBlue.withValues(alpha: 0.03),
+                          ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 38,
+                          height: 38,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: AppTheme.primaryIndigo.withValues(alpha: 0.15),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(
+                              AppConstants.vexoraLogoPath,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Icon(
+                                Icons.business_rounded,
+                                color: AppTheme.primaryIndigo,
+                                size: 22,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'About Vexora Technology',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w800,
+                                  color: isDark ? Colors.white : AppTheme.primaryIndigo,
+                                ),
+                              ),
+                              Text(
+                                'Innovating Today. Building Tomorrow.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: isDark ? Colors.grey[400] : Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      AppConstants.companyAbout,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: isDark ? Colors.grey[300] : Colors.grey[800],
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryIndigo.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppTheme.primaryIndigo.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: const Text(
+                        'Vexora Technology — Innovating Today. Building Tomorrow.',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w800,
+                          color: AppTheme.primaryIndigo,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 28),
+
+            // ─── 5. Footer ────────────────────────────────────────
             Divider(
               color: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
               thickness: 1,
             ),
             const SizedBox(height: 16),
+            FutureBuilder<String>(
+              future: AppVersionService.getFullVersionString(),
+              initialData: AppVersionService.currentVersionString,
+              builder: (context, snapshot) {
+                final ver =
+                    snapshot.data ?? AppVersionService.currentVersionString;
+                return Text(
+                  'Flowra • $ver',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.grey[400] : Colors.grey[700],
+                  ),
+                  textAlign: TextAlign.center,
+                );
+              },
+            ),
+            const SizedBox(height: 6),
             Text(
-              '© ${DateTime.now().year} Copyright Claim. All rights reserved.',
+              '© ${DateTime.now().year} Vexora Technology. Developed by Jay. All rights reserved.',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,

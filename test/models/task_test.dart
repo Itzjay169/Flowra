@@ -159,5 +159,27 @@ void main() {
       expect(task1.overlapsWith(nonOverlapping), isFalse);
       expect(task1.overlapsWith(differentDay), isFalse);
     });
+
+    test('should serialize and deserialize enableStudyLock correctly', () {
+      final taskWithLock = Task(
+        title: 'Deep Physics Study',
+        startTime: '14:00',
+        endTime: '15:30',
+        date: '2026-10-14',
+        enableStudyLock: true,
+        createdAt: now,
+        updatedAt: now,
+      );
+
+      final map = taskWithLock.toMap();
+      expect(map['enable_study_lock'], 1);
+
+      final deserialized = Task.fromMap(map);
+      expect(deserialized.enableStudyLock, isTrue);
+
+      final disabled = deserialized.copyWith(enableStudyLock: false);
+      expect(disabled.enableStudyLock, isFalse);
+      expect(disabled.toMap()['enable_study_lock'], 0);
+    });
   });
 }

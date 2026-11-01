@@ -7,14 +7,22 @@ class AppConstants {
 
   // App info
   static const String appName = 'Flowra';
-  static const String appVersion = '1.0.0';
   static const String appDescription =
       'Offline planner & expense tracker for everyone — students, working professionals, and anyone managing their time and money.';
-  static const String githubRepoUrl = 'https://github.com/Itz30jay/Flowra';
-  static const String githubProfileUrl = 'https://github.com/Itz30jay';
+  static const String githubRepoUrl = 'https://github.com/Itzjay169/Flowra';
+  static const String githubProfileUrl = 'https://github.com/Itzjay169';
   static const String instagramUrl =
       'https://www.instagram.com/jay_dev._._';
-  static const String developerName = 'Jay (Itz30jay)';
+  static const String developerName = 'Jay';
+  static const String companyName = 'Vexora Technology';
+  static const String companyTagline = 'Innovating Today. Building Tomorrow.';
+  static const String companyAbout =
+      'Vexora Technology is a software development company dedicated to creating innovative digital products and smart technology solutions. We focus on web development, mobile applications, artificial intelligence, and custom software development.\n\nOur goal is to transform ideas into powerful, reliable, and user-friendly solutions that simplify everyday challenges and create meaningful digital experiences.\n\nDriven by innovation and creativity, we aim to build technology that makes a difference.';
+  static const String companyMission =
+      'This project was proudly made by Vexora Technology to help students succeed, developed by Jay.';
+  static const String copyrightClaim =
+      '© 2026 Vexora Technology. Developed by Jay. All rights reserved.';
+  static const String vexoraLogoPath = 'assets/images/vexora_logo.png';
 
   // Donation configuration
   static const String donationUpiId = 'jaykishandas30@oksbi';
@@ -34,6 +42,16 @@ class AppConstants {
   static const String alarmAlertChannelDesc =
       'Alarm sound and vibration alerts for critical schedule tasks';
 
+  static const String studyLockPromptChannelId = 'study_lock_prompt_v1';
+  static const String studyLockPromptChannelName = 'Study Lock Start Prompt';
+  static const String studyLockPromptChannelDesc =
+      'High-priority prompt to accept or skip distraction blocking when task starts';
+
+  static const String studyLockActiveChannelId = 'study_lock_active_v1';
+  static const String studyLockActiveChannelName = 'Study Lock Active Session';
+  static const String studyLockActiveChannelDesc =
+      'Persistent timer and status notification while distraction blocking is active';
+
   // Default settings
   static const String defaultCurrency = '₹';
   static const String defaultCurrencyCode = 'INR';
@@ -51,6 +69,7 @@ class AppConstants {
   static const String keyShowNextTaskNotification = 'show_next_task_notif';
   static const String keyUserName = 'user_name';
   static const String keyUserRole = 'user_role';
+  static const String keyStudyLockMasterEnabled = 'study_lock_master_enabled';
 
   // User roles
   static const String roleStudent = 'Student';
@@ -77,6 +96,15 @@ class AppConstants {
     'Family',
     'Personal',
     'Other',
+  ];
+
+  // Subjects that trigger Study Lock option by default
+  static const List<String> studyLockSubjects = [
+    'Study',
+    'Class',
+    'Assignment',
+    'Revision',
+    'Exam Prep',
   ];
 
   // Default subject lists lightly personalized by role

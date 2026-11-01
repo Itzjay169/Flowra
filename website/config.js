@@ -20,17 +20,27 @@ const FlowraConfig = {
     minAndroidVersion: "Android 8.0 (Oreo) or higher",
   },
 
-  // Developer Information
+  // Company & Developer Information
+  company: {
+    name: "Vexora Technology",
+    tagline: "Innovating Today. Building Tomorrow.",
+    logoPath: "assets/vexora_logo.png",
+    mission: "This project was made by Vexora Technology to help students succeed.",
+    about: "Vexora Technology is a software development company dedicated to creating innovative digital products and smart technology solutions. We focus on web development, mobile applications, artificial intelligence, and custom software development. Our goal is to transform ideas into powerful, reliable, and user-friendly solutions that simplify everyday challenges and create meaningful digital experiences. Driven by innovation and creativity, we aim to build technology that makes a difference.",
+  },
+
   developer: {
-    name: "Jay (Itz30jay)",
-    bio: "Independent developer and creator of Flowra. Passionate about building fast, clean, privacy-first offline utilities that give users 100% control over their data.",
+    name: "Jay",
+    role: "Developer",
+    company: "Vexora Technology",
+    bio: "Created by Vexora Technology to help students manage routines, beat distractions, and track budgets. Developed by Jay.",
     location: "India",
-    avatar: "assets/icon.png", // Replace with your personal photo if desired
+    avatar: "assets/vexora_logo.png",
     email: "magicianbusiness30@gmail.com",
     instagramUrl: "https://www.instagram.com/jay_dev._._",
-    githubProfileUrl: "https://github.com/Itz30jay",
-    githubRepoUrl: "https://github.com/Itz30jay/Flowra",
-    githubIssuesUrl: "https://github.com/Itz30jay/Flowra/issues/new",
+    githubProfileUrl: "https://github.com/Itzjay169",
+    githubRepoUrl: "https://github.com/Itzjay169/Flowra",
+    githubIssuesUrl: "https://github.com/Itzjay169/Flowra/issues/new",
   },
 
   // Donation & Support Configuration

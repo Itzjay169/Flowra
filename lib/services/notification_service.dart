@@ -133,6 +133,33 @@ class NotificationService {
         showBadge: true,
       );
       await androidPlugin.createNotificationChannel(alarmChannel);
+
+      // 3. High priority Study Lock start prompt channel
+      final studyLockPromptChannel = AndroidNotificationChannel(
+        AppConstants.studyLockPromptChannelId,
+        AppConstants.studyLockPromptChannelName,
+        description: AppConstants.studyLockPromptChannelDesc,
+        importance: Importance.max,
+        playSound: true,
+        enableVibration: true,
+        vibrationPattern: _alarmVibrationPattern,
+        audioAttributesUsage: AudioAttributesUsage.alarm,
+        enableLights: true,
+        showBadge: true,
+      );
+      await androidPlugin.createNotificationChannel(studyLockPromptChannel);
+
+      // 4. Persistent Study Lock active session channel
+      final studyLockActiveChannel = AndroidNotificationChannel(
+        AppConstants.studyLockActiveChannelId,
+        AppConstants.studyLockActiveChannelName,
+        description: AppConstants.studyLockActiveChannelDesc,
+        importance: Importance.low,
+        playSound: false,
+        enableVibration: false,
+        showBadge: false,
+      );
+      await androidPlugin.createNotificationChannel(studyLockActiveChannel);
     }
   }
 
@@ -267,19 +294,26 @@ class NotificationService {
     );
 
     final notifId = task.id!;
+    final String notifTitle =
+        task.enableStudyLock ? '🔒 Study Lock Ready' : '📚 Study Time';
+    final String notifBody = task.enableStudyLock
+        ? '${task.title}\nStarts now (${task.startTime} – ${task.endTime}). Tap Accept to start distraction blocking for ${task.durationMinutes}m.'
+        : '${task.title}\n${task.startTime} – ${task.endTime}';
+    final String notifPayload =
+        task.enableStudyLock ? 'studylock:${task.id}' : 'task:${task.id}';
 
     // Try exact alarm mode first for punctual reminders
     try {
       await _plugin.zonedSchedule(
         notifId,
-        '📚 Study Time',
-        '${task.title}\n${task.startTime} – ${task.endTime}',
+        notifTitle,
+        notifBody,
         tzScheduled,
         notificationDetails,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
-        payload: 'task:${task.id}',
+        payload: notifPayload,
       );
       debugPrint('Scheduled exact notification for task $notifId at $tzScheduled');
     } catch (exactError) {
@@ -287,14 +321,14 @@ class NotificationService {
       try {
         await _plugin.zonedSchedule(
           notifId,
-          '📚 Study Time',
-          '${task.title}\n${task.startTime} – ${task.endTime}',
+          notifTitle,
+          notifBody,
           tzScheduled,
           notificationDetails,
           androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
           uiLocalNotificationDateInterpretation:
               UILocalNotificationDateInterpretation.absoluteTime,
-          payload: 'task:${task.id}',
+          payload: notifPayload,
         );
         debugPrint('Scheduled inexact notification for task $notifId at $tzScheduled');
       } catch (fallbackError) {
@@ -372,6 +406,37 @@ class NotificationService {
 
   /// Build Android notification details based on task priority/type
   AndroidNotificationDetails _buildAndroidDetails(Task task) {
+    if (task.enableStudyLock) {
+      return AndroidNotificationDetails(
+        AppConstants.studyLockPromptChannelId,
+        AppConstants.studyLockPromptChannelName,
+        channelDescription: AppConstants.studyLockPromptChannelDesc,
+        importance: Importance.max,
+        priority: Priority.max,
+        playSound: true,
+        enableVibration: true,
+        vibrationPattern: _alarmVibrationPattern,
+        audioAttributesUsage: AudioAttributesUsage.alarm,
+        fullScreenIntent: true,
+        category: AndroidNotificationCategory.alarm,
+        visibility: NotificationVisibility.public,
+        autoCancel: false,
+        ongoing: false,
+        actions: const [
+          AndroidNotificationAction(
+            'accept_study_lock',
+            '🔒 Accept & Start Study Lock',
+            showsUserInterface: true,
+          ),
+          AndroidNotificationAction(
+            'reject_study_lock',
+            '✕ Reject / Skip Lock',
+            showsUserInterface: false,
+          ),
+        ],
+      );
+    }
+
     final isAlarmStyle = task.notificationType == 'Alarm-style reminder';
     final isSilent = task.notificationType == 'Silent popup';
 

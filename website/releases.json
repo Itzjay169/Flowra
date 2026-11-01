@@ -1,14 +1,46 @@
 [
   {
+    "version": "1.1.0",
+    "buildNumber": 2,
+    "releaseDate": "2026-10-14",
+    "title": "Flowra v1.1.0 — Study Lock Distraction Blocker & UI Modernization",
+    "apkFileName": "Flowra-v1.1.0.apk",
+    "fileSizeMb": 60.9,
+    "sha256": "2a889897c9dd01905533ccd77c47f917c1c088e2e1af658aa56f7874bc9af3bd",
+    "downloadUrl": "https://github.com/Itzjay169/Flowra/releases/download/v1.1.0/Flowra-v1.1.0.apk",
+    "githubReleaseUrl": "https://github.com/Itzjay169/Flowra/releases/tag/v1.1.0",
+    "changes": {
+      "Added": [
+        "Study Lock Distraction Blocker: Optional start-time distraction blocking for study/focus tasks with Accept & Reject prompts.",
+        "Real-Time App Blocker: Low-latency background detection using UsageStatsManager and AccessibilityService fallback.",
+        "Study Mode Active Overlay: Immersive full-screen focus shield showing live countdown, motivational quotes, attempt counter, and exit options.",
+        "Customizable Blocked Apps: Default distractions list plus searchable installed app picker.",
+        "Study Lock Dashboard: Dedicated bottom-nav tab with master switch, permission health check cards, and session history.",
+        "Celebration Animations: Particle confetti burst and haptic feedback on session completion.",
+        "Animated Status Badges: Fluid transitions for task progress indicators."
+      ],
+      "Changed": [
+        "Upgraded SQLite database schema to version 3 with safe migration.",
+        "Bottom navigation footer expanded to 6 fixed tabs.",
+        "Modernized Material 3 dark/light theme accents and card elevations."
+      ],
+      "Fixed": [
+        "Android 12–16 exact alarm permission handling with fallback to inexact scheduling.",
+        "Reboot and package update restoration for active study sessions."
+      ],
+      "Removed": []
+    }
+  },
+  {
     "version": "1.0.0",
     "buildNumber": 1,
     "releaseDate": "2026-09-28",
     "title": "Flowra v1.0.0 — Initial Official Release",
     "apkFileName": "Flowra-v1.0.0.apk",
-    "fileSizeMb": 61.9,
-    "sha256": "1252df17e69d5ae245acdf7834737b3ad3778862d8595fe3c14b4cbadce1c5a6",
-    "downloadUrl": "https://github.com/Itz30jay/Flowra/releases/download/v1.0.0/Flowra-v1.0.0.apk",
-    "githubReleaseUrl": "https://github.com/Itz30jay/Flowra/releases/tag/v1.0.0",
+    "fileSizeMb": 18.5,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "downloadUrl": "https://github.com/Itzjay169/Flowra/releases/download/v1.0.0/Flowra-v1.0.0.apk",
+    "githubReleaseUrl": "https://github.com/Itzjay169/Flowra/releases/tag/v1.0.0",
     "changes": {
       "Added": [
         "Study Timetable & Routine Planner: Daily/weekly interactive timelines, subject filtering, and overlap detection.",

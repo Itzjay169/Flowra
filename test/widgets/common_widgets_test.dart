@@ -125,5 +125,47 @@ void main() {
       await tester.tap(find.byIcon(Icons.timer_rounded));
       expect(focusTapped, isTrue);
     });
+
+    testWidgets('AnimatedStatusBadge renders status text and correct icon',
+        (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: Column(
+              children: [
+                AnimatedStatusBadge(status: 'Completed'),
+                AnimatedStatusBadge(status: 'Running'),
+                AnimatedStatusBadge(status: 'Missed'),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Completed'), findsOneWidget);
+      expect(find.text('Running'), findsOneWidget);
+      expect(find.text('Missed'), findsOneWidget);
+      expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.play_circle_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.cancel_rounded), findsOneWidget);
+    });
+
+    testWidgets('ScrollingButtonLabel renders text and Tooltip correctly',
+        (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: ScrollingButtonLabel(
+              text: 'Very Long Subject Button Name',
+              maxWidth: 80,
+              autoScroll: false,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Very Long Subject Button Name'), findsOneWidget);
+      expect(find.byType(SingleChildScrollView), findsOneWidget);
+    });
   });
 }
