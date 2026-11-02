@@ -118,37 +118,41 @@ async function loadReleases() {
     // Embedded fallback ensures website renders nicely even when opened as file:// locally
     allReleases = [
       {
-        version: "1.0.0",
-        buildNumber: 1,
-        releaseDate: "2026-09-28",
-        title: "Flowra v1.0.0 — Initial Official Release",
-        apkFileName: "Flowra-v1.0.0.apk",
-        "fileSizeMb": 62.0,
-        "sha256": "c0d18e3916f58f40fd73b6159a025162c30cebfb2398cd70174b5a6341b3fa23",
+        version: "1.2.0",
+        buildNumber: 3,
+        releaseDate: "2026-11-02",
+        title: "Flowra v1.2.0 — Study Lock Overhaul, Self-Discipline Mode & Vexora Technology Edition",
+        apkFileName: "Flowra-v1.2.0.apk",
+        fileSizeMb: 62.0,
+        sha256: "c0d18e3916f58f40fd73b6159a025162c30cebfb2398cd70174b5a6341b3fa23",
         downloadUrl: "Flowra-v1.2.0.apk",
-        githubReleaseUrl: "https://github.com/Itzjay169/Flowra/releases",
+        githubReleaseUrl: "https://github.com/Itzjay169/Flowra",
         changes: {
           Added: [
-            "Study Timetable & Routine Planner: Daily/weekly interactive timelines, subject filtering, and overlap detection.",
-            "Exact Alarms & Offline Notifications: Survives phone restarts with high-priority Android alarm channels.",
-            "Study Focus & Pomodoro Mode: Clean focus timer with 25m, 45m, and 60m presets.",
-            "Daily Expense Tracker & Budget: Fast expense logging, category filtering, and 80%/100% budget alerts.",
-            "Visual Analytics & Reports: Weekly task completion charts and 30-day expense breakdowns.",
-            "100% Offline SQLite Storage with CSV export for all expense data.",
-            "Optional Developer Support screen with instant UPI deep-linking.",
-            "Automated CI/CD build pipeline for APK and AAB binaries."
+            "Study Lock Self-Discipline Fallback Mode: When Android 13+ restricted settings prevent Usage Access or Accessibility permissions on sideloaded APKs, Flowra offers an instant Focus Timer / Self-Discipline mode so focus sessions work seamlessly without crashing or blocking.",
+            "Restricted Settings Step-by-Step Guidance: Honest, device-aware guidance with a direct 'Open Flowra App Info' button guiding users to grant permissions safely if they choose.",
+            "Auto-Recheck Permissions on App Resume: Instantly refreshes permission statuses when you return from Android Settings via WidgetsBindingObserver.",
+            "Live Enforcement Mode Indicator: Real-time banner displaying whether your session is running in 'Full Distraction Blocker' or 'Self-Discipline' mode.",
+            "Direct APK Download: Download Flowra-v1.2.0.apk directly from the website with one click and zero redirects.",
+            "Interactive Study Lock Home Card: Distraction shield status, live countdown timer, and quick launch directly from the Home Dashboard.",
+            "1-Click Gmail Suggestion Fallback: Pre-fills feedback directly into Gmail web or default mail apps."
           ],
           Changed: [
-            "Full brand refresh to Flowra with deep indigo Material 3 theme and new app icons.",
-            "Modular app footer and updated copyright info.",
-            "Configured secure keystore release signing."
+            "Vexora Technology Branding: Standardized official branding to Vexora Technology across all screens, documentation, and metadata.",
+            "Clean Version Display: Displays 'Version 1.2.0' cleanly across all dialogs and screens without internal build numbers in parentheses.",
+            "Community Feedback Routing: All suggestions now route directly to magicianbusiness30@gmail.com with one-time activation detection.",
+            "Streamlined Navigation: Bottom navigation optimized to 5 core tabs (Home, Timetable, Expenses, Reports, Settings) with Study Lock easily accessible from Home.",
+            "Mobile-First Responsive Website: Fluid layout support across 320px to 1440px viewports with zero horizontal scrolling and reduced motion support."
           ],
           Fixed: [
-            "Notification alarm triggers for Android 13/14+ exact alarm policies.",
-            "StudyFocusScreen layout overflow on smaller screen heights.",
-            "Resolved all analysis warnings and lints."
+            "Android 13+ sideloaded APK permission handling and restricted-settings diagnostic health checks.",
+            "Safe error handling and cancellation checks for animation controllers in timetable widgets.",
+            "Form submission timeout protection with 12s AbortController and _captcha: 'false' optimization.",
+            "Resolved all static analysis warnings, lints, and test suites (52/52 tests passing)."
           ],
-          Removed: []
+          Removed: [
+            "Deprecated modernization scripts and legacy workflow definitions."
+          ]
         }
       }
     ];
