@@ -30,10 +30,10 @@ const FlowraConfig = {
   },
 
   developer: {
-    name: "Jay",
-    role: "Developer",
+    name: "Vexora Technology",
+    role: "Development Team",
     company: "Vexora Technology",
-    bio: "Created by Vexora Technology to help students manage routines, beat distractions, and track budgets. Developed by Jay.",
+    bio: "Flowra is developed by Vexora Technology to provide students with distraction-free, privacy-first productivity. Lead Developer: Jay",
     location: "India",
     avatar: "assets/vexora_logo.png",
     email: "magicianbusiness30@gmail.com",

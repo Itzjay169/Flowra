@@ -457,7 +457,7 @@ a:hover {
 /* Features Grid */
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 24px;
 }
 
@@ -506,7 +506,7 @@ a:hover {
 /* App Showcase / Screenshots Section */
 .showcase-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: 24px;
 }
 
@@ -813,7 +813,7 @@ a:hover {
 /* Install Guide Section */
 .install-steps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: 24px;
   margin-bottom: 40px;
 }
@@ -1254,7 +1254,7 @@ a:hover {
     gap: 36px;
   }
   .suggestion-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -1298,5 +1298,90 @@ a:hover {
   }
   .btn-hero-download, .btn-outline {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 14px;
+  }
+  .brand-badge {
+    display: none;
+  }
+  .nav-wrap {
+    gap: 8px;
+  }
+  .brand-link {
+    font-size: 1.15rem;
+    gap: 8px;
+  }
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+  }
+  .nav-actions {
+    gap: 8px;
+  }
+  .theme-toggle-btn, .mobile-menu-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .feature-card, .showcase-item, .step-card, .suggestion-form-card, .roadmap-card {
+    padding: 18px;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .suggestion-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hero-title {
+    font-size: 1.85rem;
+    line-height: 1.25;
+  }
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+  .sha256-box {
+    font-size: 0.72rem;
+    padding: 8px 10px;
+  }
+  .sha256-box code {
+    word-break: break-all;
+    overflow-wrap: anywhere;
+  }
+  .version-meta-pill {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+  }
+  .version-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .step-number {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 340px) {
+  .container {
+    padding: 0 10px;
+  }
+  .hero-title {
+    font-size: 1.6rem;
+  }
+  .nav-brand span {
+    font-size: 1.05rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
