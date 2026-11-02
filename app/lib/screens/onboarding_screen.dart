@@ -338,7 +338,7 @@ class _SetupSheetState extends State<_SetupSheet> {
             TextField(
               controller: widget.nameController,
               decoration: const InputDecoration(
-                hintText: 'e.g. Jay',
+                hintText: 'e.g. Alex',
                 prefixIcon: Icon(Icons.person_rounded),
               ),
               textCapitalization: TextCapitalization.words,

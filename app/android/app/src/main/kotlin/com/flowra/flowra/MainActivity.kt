@@ -54,6 +54,13 @@ class MainActivity : FlutterActivity() {
                     openBatteryOptimizationSettings()
                     result.success(true)
                 }
+                "openAppInfoSettings" -> {
+                    openAppInfoSettings()
+                    result.success(true)
+                }
+                "isRestrictedSettingsLikely" -> {
+                    result.success(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                }
                 "getInstalledApps" -> {
                     result.success(queryInstalledApps())
                 }
@@ -258,6 +265,22 @@ class MainActivity : FlutterActivity() {
                     startActivity(intent)
                 } catch (_: Exception) {}
             }
+        }
+    }
+
+    private fun openAppInfoSettings() {
+        try {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:$packageName")
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            startActivity(intent)
+        } catch (_: Exception) {
+            try {
+                startActivity(Intent(Settings.ACTION_SETTINGS).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                })
+            } catch (_: Exception) {}
         }
     }
 

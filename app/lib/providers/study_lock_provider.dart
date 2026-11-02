@@ -6,6 +6,18 @@ import 'package:flowra/services/database_service.dart';
 import 'package:flowra/services/study_lock_native_service.dart';
 import 'package:flowra/utils/constants.dart';
 
+/// Modes of distraction enforcement based on granted Android permissions
+enum StudyLockEnforcementMode {
+  /// Full distraction blocker: usage stats / accessibility / overlay actively
+  /// redirects away from blocked applications.
+  fullBlocker,
+
+  /// Self-discipline / focus timer mode: tracks time, records history, and fires
+  /// notifications, but does not forcibly intercept foreground apps because
+  /// restricted permissions are not granted.
+  selfDiscipline,
+}
+
 /// Provider for managing Study Lock state, permissions, blocked apps list,
 /// active session countdown, and historical records.
 class StudyLockProvider extends ChangeNotifier {
@@ -14,6 +26,7 @@ class StudyLockProvider extends ChangeNotifier {
 
   bool _masterEnabled = true;
   bool _isLoading = false;
+  bool _isRestrictedSettingsLikely = false;
   List<BlockedApp> _blockedApps = [];
   List<Map<String, dynamic>> _installedApps = [];
   List<StudyLockSession> _sessionHistory = [];
@@ -44,6 +57,7 @@ class StudyLockProvider extends ChangeNotifier {
   // Getters
   bool get masterEnabled => _masterEnabled;
   bool get isLoading => _isLoading;
+  bool get isRestrictedSettingsLikely => _isRestrictedSettingsLikely;
   List<BlockedApp> get blockedApps => _blockedApps;
   List<BlockedApp> get activeBlockedApps =>
       _blockedApps.where((a) => a.isBlocked).toList();
@@ -60,10 +74,21 @@ class StudyLockProvider extends ChangeNotifier {
   int get blockedAttemptsCount => _blockedAttemptsCount;
   Map<String, bool> get permissions => _permissions;
 
-  bool get hasAllCorePermissions =>
-      (_permissions['usageAccess'] == true ||
-          _permissions['accessibility'] == true) &&
-      _permissions['notification'] == true;
+  StudyLockEnforcementMode get enforcementMode {
+    final hasUsage = _permissions['usageAccess'] == true;
+    final hasOverlay = _permissions['overlay'] == true;
+    final hasAccessibility = _permissions['accessibility'] == true;
+
+    if ((hasUsage && hasOverlay) || hasAccessibility) {
+      return StudyLockEnforcementMode.fullBlocker;
+    }
+    return StudyLockEnforcementMode.selfDiscipline;
+  }
+
+  bool get isFullBlockerReady =>
+      enforcementMode == StudyLockEnforcementMode.fullBlocker;
+
+  bool get hasAllCorePermissions => isFullBlockerReady;
 
   StudyLockProvider() {
     _init();
@@ -99,7 +124,12 @@ class StudyLockProvider extends ChangeNotifier {
 
   Future<void> checkPermissions() async {
     _permissions = await _native.checkPermissions();
+    _isRestrictedSettingsLikely = await _native.isRestrictedSettingsLikely();
     notifyListeners();
+  }
+
+  Future<void> openAppInfoSettings() async {
+    await _native.openAppInfoSettings();
   }
 
   Future<void> requestPermission(String type) async {

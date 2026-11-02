@@ -555,7 +555,7 @@ class _DonationScreenState extends State<DonationScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              '© ${DateTime.now().year} Vexora Technology. Developed by Jay. All rights reserved.',
+              AppConstants.copyrightClaim,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,

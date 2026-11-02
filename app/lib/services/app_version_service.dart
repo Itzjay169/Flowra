@@ -21,8 +21,8 @@ class AppVersionService {
       _cachedInfo = PackageInfo(
         appName: 'Flowra',
         packageName: 'com.flowra.flowra',
-        version: '1.1.0',
-        buildNumber: '2',
+        version: '1.2.0',
+        buildNumber: '3',
       );
     }
     return _cachedInfo!;
@@ -35,24 +35,28 @@ class AppVersionService {
   }
 
   /// Returns synchronous formatted version if cached, or fallback string.
+  /// Shows clean version name only (e.g. "Version 1.2.0"), never with build numbers in parentheses.
   static String get currentVersionString {
     final info = _cachedInfo;
-    if (info == null) return 'Version 1.1.0 (build 2)';
-    final build = info.buildNumber.isNotEmpty ? ' (build ${info.buildNumber})' : '';
-    return 'Version ${info.version}$build';
+    if (info == null) return 'Version 1.2.0';
+    return 'Version ${info.version}';
   }
 
-  /// Returns formatted "Version x.y.z (build N)"
+  /// Returns formatted "Version x.y.z"
   static Future<String> getFullVersionString() async {
     final info = await packageInfo;
-    final build = info.buildNumber.isNotEmpty ? ' (build ${info.buildNumber})' : '';
-    return 'Version ${info.version}$build';
+    return 'Version ${info.version}';
   }
 
-  /// Returns "v{version} (build {buildNumber})"
+  /// Returns "v{version}"
   static Future<String> getShortVersionString() async {
     final info = await packageInfo;
-    final build = info.buildNumber.isNotEmpty ? ' (build ${info.buildNumber})' : '';
-    return 'v${info.version}$build';
+    return 'v${info.version}';
+  }
+
+  /// Internal build number for release tracking/diagnostics only
+  static Future<String> getInternalBuildNumber() async {
+    final info = await packageInfo;
+    return info.buildNumber;
   }
 }

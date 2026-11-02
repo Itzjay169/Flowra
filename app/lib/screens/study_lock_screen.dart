@@ -17,7 +17,7 @@ class StudyLockScreen extends StatefulWidget {
 }
 
 class _StudyLockScreenState extends State<StudyLockScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -25,6 +25,7 @@ class _StudyLockScreenState extends State<StudyLockScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _tabController = TabController(length: 3, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final p = context.read<StudyLockProvider>();
@@ -36,9 +37,19 @@ class _StudyLockScreenState extends State<StudyLockScreen>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tabController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      final p = context.read<StudyLockProvider>();
+      p.checkPermissions();
+      p.syncNativeStatus();
+    }
   }
 
   @override
@@ -104,22 +115,205 @@ class _StudyLockScreenState extends State<StudyLockScreen>
       children: [
         // 1. Master Toggle Card
         _buildMasterToggleCard(context, lock),
+        const SizedBox(height: 12),
+
+        // 2. Current Mode Banner
+        _buildEnforcementModeBanner(context, lock),
         const SizedBox(height: 16),
 
-        // 2. Active Session Card (if running)
+        // 3. Active Session Card (if running)
         if (lock.isLockActive) ...[
           _buildActiveLockCard(context, lock),
           const SizedBox(height: 16),
         ],
 
-        // 3. Privacy Guarantee Banner
+        // 4. Android 13+ Restricted Settings Guidance
+        if (!lock.isFullBlockerReady) ...[
+          _buildRestrictedSettingsGuidance(context, lock),
+          const SizedBox(height: 16),
+        ],
+
+        // 5. Privacy Guarantee Banner
         _buildPrivacyBanner(context),
         const SizedBox(height: 16),
 
-        // 4. Permissions Status Cards
+        // 6. Permissions Status Cards
         _buildPermissionsSection(context, lock),
         const SizedBox(height: 32),
       ],
+    );
+  }
+
+  Widget _buildEnforcementModeBanner(
+      BuildContext context, StudyLockProvider lock) {
+    final isFull = lock.isFullBlockerReady;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isFull
+            ? AppTheme.successGreen.withAlpha(20)
+            : AppTheme.primaryIndigo.withAlpha(20),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isFull
+              ? AppTheme.successGreen.withAlpha(80)
+              : AppTheme.primaryIndigo.withAlpha(80),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            isFull ? Icons.verified_user_rounded : Icons.timer_outlined,
+            color: isFull ? AppTheme.successGreen : AppTheme.primaryIndigo,
+            size: 22,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isFull
+                      ? 'Full Distraction Blocker Mode'
+                      : 'Self-Discipline / Focus Timer Mode',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color:
+                        isFull ? AppTheme.successGreen : AppTheme.primaryIndigo,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  isFull
+                      ? 'Active & Guarding: Distracting apps on your blocked list will be prevented from opening.'
+                      : 'Focus timer, statistics, and reminders work offline. Sideloaded APK protections restrict automatic app blocking until granted below.',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    color: Theme.of(context).textTheme.bodySmall?.color,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRestrictedSettingsGuidance(
+      BuildContext context, StudyLockProvider lock) {
+    return Card(
+      elevation: 0,
+      color: Colors.amber.withAlpha(20),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: Colors.amber.withAlpha(80)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withAlpha(40),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.security_update_warning_rounded,
+                    color: Colors.amber,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'Seeing "App was denied access"?',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'On Android 13 and newer, Android locks sensitive permissions (Usage Access & Accessibility) for apps installed outside the Google Play Store under "Restricted Settings". This is normal Android OS security protection.',
+              style: TextStyle(fontSize: 12, height: 1.35),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'How to allow access on Android 13+:',
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            const _StepGuideRow(
+              step: '1',
+              text: 'Tap the "Open Flowra App Info" button below.',
+            ),
+            const _StepGuideRow(
+              step: '2',
+              text: 'In the top-right corner, tap the 3 dots (⋮) menu.',
+            ),
+            const _StepGuideRow(
+              step: '3',
+              text:
+                  'Select "Allow restricted settings" and authenticate with your PIN/fingerprint.',
+            ),
+            const _StepGuideRow(
+              step: '4',
+              text:
+                  'Return here and toggle "Usage Access" or "Accessibility" on.',
+            ),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha(25),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline_rounded,
+                      size: 16, color: Colors.amber),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Manufacturer Note: Grant access only if you trust Flowra. If your phone manufacturer hides the 3 dots, you can continue using Flowra in Self-Discipline Mode without blocking.',
+                      style: TextStyle(fontSize: 11, height: 1.3),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => lock.openAppInfoSettings(),
+                icon: const Icon(Icons.settings_applications_rounded, size: 18),
+                label: const Text('Open Flowra App Info (Allow Settings)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber[800],
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -227,17 +421,21 @@ class _StudyLockScreenState extends State<StudyLockScreen>
                     Container(
                       width: 10,
                       height: 10,
-                      decoration: const BoxDecoration(
-                        color: AppTheme.successGreen,
+                      decoration: BoxDecoration(
+                        color: lock.isFullBlockerReady
+                            ? AppTheme.successGreen
+                            : AppTheme.warningOrange,
                         shape: BoxShape.circle,
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Text(
-                      'STUDY LOCK ACTIVE',
-                      style: TextStyle(
-                        fontSize: 12,
-                        letterSpacing: 1.2,
+                    Text(
+                      lock.isFullBlockerReady
+                          ? 'STUDY LOCK ACTIVE (BLOCKING)'
+                          : 'FOCUS TIMER ACTIVE (SELF-DISCIPLINE)',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        letterSpacing: 1.1,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFFA5B4FC),
                       ),
@@ -331,7 +529,9 @@ class _StudyLockScreenState extends State<StudyLockScreen>
                       size: 16, color: Color(0xFFF59E0B)),
                   const SizedBox(width: 6),
                   Text(
-                    'Blocked App Attempts: ${lock.blockedAttemptsCount}',
+                    lock.isFullBlockerReady
+                        ? 'Blocked App Attempts: ${lock.blockedAttemptsCount}'
+                        : 'Self-Discipline Mode: Distraction tracking active',
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -430,7 +630,8 @@ class _StudyLockScreenState extends State<StudyLockScreen>
         // Notifications
         _PermissionCard(
           title: 'Notifications',
-          subtitle: 'Receive start-time prompt & active countdown',
+          subtitle:
+              'Alerts you when scheduled sessions begin & displays countdown in status bar',
           isGranted: perms['notification'] == true,
           onTap: () => lock.requestPermission('notification'),
           icon: Icons.notifications_active_rounded,
@@ -439,7 +640,8 @@ class _StudyLockScreenState extends State<StudyLockScreen>
         // Exact Alarm
         _PermissionCard(
           title: 'Exact Alarms',
-          subtitle: 'Precise start-time triggering at scheduled minute',
+          subtitle:
+              'Required on Android 12+ to ring study prompts at the exact scheduled minute',
           isGranted: perms['exactAlarm'] == true,
           onTap: () => lock.requestPermission('exactAlarm'),
           icon: Icons.alarm_rounded,
@@ -448,7 +650,8 @@ class _StudyLockScreenState extends State<StudyLockScreen>
         // Usage Access
         _PermissionCard(
           title: 'Usage Access (Primary Detector)',
-          subtitle: 'Detects foreground app launches without reading content',
+          subtitle:
+              'Detects when blocked apps are opened. On Android 13+, sideloaded APKs require unlocking in App Info > 3 dots > Allow restricted settings first.',
           isGranted: perms['usageAccess'] == true,
           onTap: () => lock.requestPermission('usageAccess'),
           icon: Icons.data_usage_rounded,
@@ -456,8 +659,9 @@ class _StudyLockScreenState extends State<StudyLockScreen>
 
         // Accessibility Service
         _PermissionCard(
-          title: 'Accessibility Service (Real-time Fallback)',
-          subtitle: 'Instant (<50ms) redirection away from blocked apps',
+          title: 'Accessibility Service (Fast Redirection)',
+          subtitle:
+              'Optional detector for instant (<50ms) bounce-back to Flowra. Sideloaded APKs require App Info > Allow restricted settings on Android 13+.',
           isGranted: perms['accessibility'] == true,
           onTap: () => lock.requestPermission('accessibility'),
           icon: Icons.accessibility_new_rounded,
@@ -466,7 +670,8 @@ class _StudyLockScreenState extends State<StudyLockScreen>
         // Overlay Permission
         _PermissionCard(
           title: 'Display Over Other Apps',
-          subtitle: 'Presents full-screen "Study Mode Active" overlay',
+          subtitle:
+              'Presents the full-screen "Focus Mode Active" overlay over blocked apps',
           isGranted: perms['overlay'] == true,
           onTap: () => lock.requestPermission('overlay'),
           icon: Icons.layers_rounded,
@@ -475,7 +680,8 @@ class _StudyLockScreenState extends State<StudyLockScreen>
         // Battery Optimization
         _PermissionCard(
           title: 'Battery Optimization Exemption',
-          subtitle: 'Prevents system battery saver from terminating monitor',
+          subtitle:
+              'Prevents system battery saver from terminating the offline session monitor in background',
           isGranted: perms['batteryOptimization'] == true,
           onTap: () => lock.requestPermission('batteryOptimization'),
           icon: Icons.battery_charging_full_rounded,
@@ -870,7 +1076,31 @@ class _StudyLockScreenState extends State<StudyLockScreen>
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
+              if (!lock.isFullBlockerReady) ...[
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withAlpha(25),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.amber.withAlpha(80)),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.info_outline_rounded,
+                          size: 18, color: Colors.amber),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Notice: Starting in Self-Discipline Mode. Distraction blocking requires Usage Access or Accessibility. Time and sessions will still be logged.',
+                          style: TextStyle(fontSize: 11.5, height: 1.3),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
@@ -885,7 +1115,9 @@ class _StudyLockScreenState extends State<StudyLockScreen>
                     _tabController.animateTo(0);
                   },
                   icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('Start Distraction Blocker'),
+                  label: Text(lock.isFullBlockerReady
+                      ? 'Start Distraction Blocker'
+                      : 'Start Focus Session (Self-Discipline)'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryIndigo,
                     foregroundColor: Colors.white,
@@ -1151,6 +1383,44 @@ class _MetricChip extends StatelessWidget {
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: highlightColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StepGuideRow extends StatelessWidget {
+  final String step;
+  final String text;
+
+  const _StepGuideRow({required this.step, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.5),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: 9,
+            backgroundColor: Colors.amber.withAlpha(180),
+            child: Text(
+              step,
+              style: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 12, height: 1.3),
             ),
           ),
         ],

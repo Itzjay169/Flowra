@@ -13,15 +13,18 @@ class AppConstants {
   static const String githubProfileUrl = 'https://github.com/Itzjay169';
   static const String instagramUrl =
       'https://www.instagram.com/jay_dev._._';
-  static const String developerName = 'Jay';
+  static const String developerName = 'Vexora Technology';
+  static const String leadDeveloperName = 'Jay';
   static const String companyName = 'Vexora Technology';
   static const String companyTagline = 'Innovating Today. Building Tomorrow.';
   static const String companyAbout =
       'Vexora Technology is a software development company dedicated to creating innovative digital products and smart technology solutions. We focus on web development, mobile applications, artificial intelligence, and custom software development.\n\nOur goal is to transform ideas into powerful, reliable, and user-friendly solutions that simplify everyday challenges and create meaningful digital experiences.\n\nDriven by innovation and creativity, we aim to build technology that makes a difference.';
+  static const String aboutFlowraDescription =
+      'Flowra is an offline-first student planner and expense tracker crafted by Vexora Technology.\nLead Developer: Jay';
   static const String companyMission =
-      'This project was proudly made by Vexora Technology to help students succeed, developed by Jay.';
+      'Flowra is proudly developed by Vexora Technology to empower students with private, distraction-free productivity.';
   static const String copyrightClaim =
-      '© 2026 Vexora Technology. Developed by Jay. All rights reserved.';
+      '© 2026 Vexora Technology. All rights reserved.';
   static const String vexoraLogoPath = 'assets/images/vexora_logo.png';
 
   // Donation configuration

@@ -518,14 +518,32 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: AppTheme.primaryIndigo.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                'Made by Vexora Technology for students • Developed by Jay',
-                style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppTheme.primaryIndigo),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Crafted by Vexora Technology for students',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.primaryIndigo,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Lead Developer: Jay',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.primaryIndigo,
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 10),
@@ -535,7 +553,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '© ${DateTime.now().year} Vexora Technology. Developed by Jay.',
+              AppConstants.copyrightClaim,
               style: TextStyle(fontSize: 11, color: Colors.grey[500]),
             ),
           ],

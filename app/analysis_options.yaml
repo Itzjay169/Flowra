@@ -15,7 +15,6 @@ include: package:flutter_lints/flutter.yaml
 
 linter:
   rules:
-    - unnecessary_import
     - avoid_unused_constructor_parameters
     - cancel_subscriptions
     - close_sinks

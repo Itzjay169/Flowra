@@ -38,11 +38,18 @@ void main(List<String> args) async {
   }
 
   final rootDir = Directory.current;
-  final pubspecFile = File('${rootDir.path}/pubspec.yaml');
+  // Support running from repo root (Flowra/) — pubspec is in app/
+  var pubspecFile = File('${rootDir.path}/app/pubspec.yaml');
   if (!pubspecFile.existsSync()) {
-    print('❌ Error: pubspec.yaml not found in ${rootDir.path}');
+    // Fallback: check if running from within app/ directory
+    pubspecFile = File('${rootDir.path}/pubspec.yaml');
+  }
+  if (!pubspecFile.existsSync()) {
+    print('❌ Error: pubspec.yaml not found in ${rootDir.path}/app/ or ${rootDir.path}');
     exit(1);
   }
+  // Derive appDir for build commands
+  final appDir = pubspecFile.parent;
 
   // 1. Read & Bump pubspec.yaml
   final pubspecContent = pubspecFile.readAsStringSync();
@@ -188,6 +195,7 @@ void main(List<String> args) async {
     final buildProcess = await Process.start(
       'flutter',
       ['build', 'apk', '--release', '--android-skip-build-dependency-validation'],
+      workingDirectory: appDir.path,
       runInShell: true,
       mode: ProcessStartMode.inheritStdio,
     );
@@ -201,7 +209,7 @@ void main(List<String> args) async {
       exit(exitCode);
     }
 
-    final builtApk = File('${rootDir.path}/build/app/outputs/flutter-apk/app-release.apk');
+    final builtApk = File('${appDir.path}/build/app/outputs/flutter-apk/app-release.apk');
     if (!builtApk.existsSync()) {
       print('❌ Error: Built APK not found at ${builtApk.path}');
       exit(1);
@@ -344,8 +352,8 @@ void main(List<String> args) async {
   print('\n📝 Creating git commit and tag...');
   Process.runSync('git', [
     'add',
-    'pubspec.yaml',
-    'pubspec.lock',
+    'app/pubspec.yaml',
+    'app/pubspec.lock',
     'CHANGELOG.md',
     'README.md',
     'releases/releases.json',

@@ -127,6 +127,30 @@ class StudyLockNativeService {
     }
   }
 
+  /// Open Application Details Settings (App Info) screen where users can
+  /// access the 3-dots menu -> "Allow restricted settings" on Android 13+
+  Future<void> openAppInfoSettings() async {
+    if (!Platform.isAndroid) return;
+    try {
+      await _channel.invokeMethod('openAppInfoSettings');
+    } catch (e) {
+      debugPrint('Error opening App Info settings: $e');
+    }
+  }
+
+  /// Check if device is Android 13+ (API 33+) where sideloaded APKs have
+  /// sensitive permissions guarded by Android's Restricted Settings
+  Future<bool> isRestrictedSettingsLikely() async {
+    if (!Platform.isAndroid) return false;
+    try {
+      final res =
+          await _channel.invokeMethod<bool>('isRestrictedSettingsLikely');
+      return res == true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   /// Query installed launchable applications
   Future<List<Map<String, dynamic>>> getInstalledApps() async {
     if (!Platform.isAndroid) return [];

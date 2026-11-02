@@ -17,16 +17,16 @@
 <!-- VERSION_SECTION_START -->
 ## 📦 Latest Version & Releases
 
-> **Latest Release**: `v1.1.0` (Build 2) • **Date**: 2026-10-14  
-> 📥 **Direct Download**: [Flowra-v1.1.0.apk](Flowra-v1.1.0.apk)  
-> 🔒 **SHA-256**: `2a889897c9dd01905533ccd77c47f917c1c088e2e1af658aa56f7874bc9af3bd`
+> **Latest Release**: `v1.2.0` (Build 3) • **Date**: 2026-11-02  
+> 📥 **Direct Download**: [Flowra-v1.2.0.apk](https://itzjay169.github.io/Flowra/Flowra-v1.2.0.apk)  
 
 ### Version History
 
-| Version | Build | Date | Size | Checksum (SHA-256) | Download |
-|---|---|---|---|---|---|
-| `v1.1.0` | 2 | 2026-10-14 | 60.9 MB | `2a889897c9dd...` | [Flowra-v1.1.0.apk](Flowra-v1.1.0.apk) |
-| `v1.0.0` | 1 | 2026-09-28 | 18.5 MB | `e3b0c44298fc...` | [Flowra-v1.0.0.apk](https://github.com/Itzjay169/Flowra/releases/download/v1.0.0/Flowra-v1.0.0.apk) |
+| Version | Build | Date | Download |
+|---|---|---|---|
+| `v1.2.0` | 3 | 2026-11-02 | [Flowra-v1.2.0.apk](https://itzjay169.github.io/Flowra/Flowra-v1.2.0.apk) |
+| `v1.1.0` | 2 | 2026-10-14 | [Flowra-v1.1.0.apk](https://github.com/Itzjay169/Flowra/releases/download/v1.1.0/Flowra-v1.1.0.apk) |
+| `v1.0.0` | 1 | 2026-09-28 | [Flowra-v1.0.0.apk](https://github.com/Itzjay169/Flowra/releases/download/v1.0.0/Flowra-v1.0.0.apk) |
 
 *See [CHANGELOG.md](CHANGELOG.md) and [releases.json](releases/releases.json) for full history.*
 <!-- VERSION_SECTION_END -->
@@ -122,87 +122,46 @@
 
 ```
 Flowra/
-├── .github/
-│   └── workflows/
-│       ├── ci.yml                     # Continuous integration: lint, test, release build
-│       └── deploy-pages.yml           # GitHub Pages auto-deployment for landing site
-├── android/                           # Native Android host configuration
-│   ├── app/
-│   │   ├── src/main/
-│   │   │   ├── AndroidManifest.xml    # Exact alarms, boot receiver, foreground services, permissions
-│   │   │   ├── kotlin/.../MainActivity.kt            # MethodChannel bridge, permissions, app listing
-│   │   │   ├── kotlin/.../StudyLockManager.kt        # Distraction blocker state & countdown singleton
-│   │   │   ├── kotlin/.../StudyLockService.kt        # Foreground countdown service & usage detector
-│   │   │   ├── kotlin/.../StudyLockAccessibilityService.kt # Instant (<150ms) window interceptor fallback
-│   │   │   ├── kotlin/.../StudyLockOverlayActivity.kt# Full-screen focus shield barrier UI
-│   │   │   ├── kotlin/.../StudyLockActionReceiver.kt # Notification action receiver (Start/Reject/End)
-│   │   │   ├── kotlin/.../StudyLockBootReceiver.kt   # Reboot and update session restoration
-│   │   │   └── res/
-│   │   │       ├── xml/accessibility_service_config.xml # Accessibility config
-│   │   │       └── values/styles.xml  # Transparent barrier theme (Theme.StudyLockOverlay)
-│   │   └── build.gradle               # MinSdk 26 (Android 8.0+), Java 11 desugaring
-│   ├── build.gradle
-│   └── settings.gradle
-├── assets/                            # Branding and launcher icons
-│   └── icon/
-│       └── icon.png                   # High-res app icon (used by flutter_launcher_icons)
-├── lib/
-│   ├── main.dart                      # App entry point, Provider tree, Bottom navigation
-│   ├── models/                        # Immutable data models
-│   │   ├── task.dart                  # Task model with recurrence, status & collision logic
-│   │   ├── expense.dart               # Expense model with date & category helpers
-│   │   ├── budget.dart                # Monthly budget data model
-│   │   └── study_lock.dart            # BlockedApp, StudyLockSession, StudyLockAttempt models
-│   ├── services/                      # Offline core services
-│   │   ├── database_service.dart      # SQLite database v3, migrations, queries, indexes
-│   │   ├── notification_service.dart  # Local notifications, alarms, boot listeners & study lock prompts
-│   │   ├── study_lock_native_service.dart # Native Android MethodChannel bridge
-│   │   ├── settings_service.dart      # SharedPreferences persistence
-│   │   ├── export_service.dart        # CSV data generation and device file export
-│   │   └── app_version_service.dart   # Dynamic app versioning via package_info_plus
-│   ├── providers/                     # State management (Provider pattern)
-│   │   ├── task_provider.dart         # Task state, alarms, filters & stats
-│   │   ├── expense_provider.dart      # Expense state, budget tracking & queries
-│   │   ├── settings_provider.dart     # User profile, theme, currency & permissions
-│   │   └── study_lock_provider.dart   # Master toggle, blocked apps, active session, history & health
-│   ├── screens/                       # Mobile UI screens
-│   │   ├── home_screen.dart           # Greeting, Next task countdown, today stats
-│   │   ├── timetable_screen.dart      # Weekly selector, daily timeline, subject filter
-│   │   ├── expenses_screen.dart       # Budget bar, category charts, expense list
-│   │   ├── reports_screen.dart        # Schedule & Money analytics tabs
-│   │   ├── settings_screen.dart       # Permissions, theme, currency, CSV export
-│   │   ├── onboarding_screen.dart     # Intro flow, permission request, budget setup
-│   │   ├── add_edit_task_screen.dart  # Task form with collision checks & Study Lock toggle
-│   │   ├── add_edit_expense_screen.dart # Expense logging form
-│   │   ├── study_focus_screen.dart    # Pomodoro & focus mode timer
-│   │   ├── study_lock_screen.dart     # Distraction Blocker dashboard & app selector
-│   │   └── donation_screen.dart       # Preset amounts & UPI launcher
-│   ├── utils/
-│   │   ├── constants.dart             # Categories, roles, currencies, defaults
-│   │   ├── helpers.dart               # Date, time, currency formatting
-│   │   └── theme.dart                 # Indigo-centered Light & Dark Material 3 theme
-│   └── widgets/
-│       ├── app_footer.dart            # Standardized 6-tab bottom navigation bar & footer
-│       ├── celebration_dialog.dart    # Confetti particle burst celebration animation
-│       └── common_widgets.dart        # TaskCard, ExpenseCard, StatCard, AnimatedStatusBadge, etc.
+├── .github/workflows/                 # CI/CD pipeline configurations
+│   ├── ci.yml                         # Lint, test, build, release
+│   ├── codeql.yml                     # CodeQL security scanning
+│   └── deploy-pages.yml               # GitHub Pages deployment
+├── app/                               # Flutter mobile application
+│   ├── android/                       # Native Android platform code
+│   │   └── app/src/main/
+│   │       ├── AndroidManifest.xml    # Permissions & service declarations
+│   │       ├── kotlin/.../MainActivity.kt         # MethodChannel bridge
+│   │       ├── kotlin/.../StudyLockService.kt      # Foreground blocker service
+│   │       ├── kotlin/.../StudyLockAccessibilityService.kt # Event interceptor
+│   │       ├── kotlin/.../StudyLockOverlayActivity.kt # Focus barrier UI
+│   │       └── res/                               # Resources & themes
+│   ├── assets/                        # App icons & images
+│   ├── ios/                           # iOS platform (future)
+│   ├── lib/                           # Dart source code
+│   │   ├── main.dart                  # App entry point & Provider tree
+│   │   ├── models/                    # Data models (Task, Expense, Budget, StudyLock)
+│   │   ├── services/                  # Core services (DB, notifications, native bridge)
+│   │   ├── providers/                 # State management (Provider pattern)
+│   │   ├── screens/                   # UI screens (Home, Timetable, Expenses, etc.)
+│   │   ├── utils/                     # Constants, helpers, theme
+│   │   └── widgets/                   # Shared widgets (footer, celebrations, cards)
+│   ├── test/                          # Unit & widget tests (52 tests)
+│   ├── pubspec.yaml                   # Flutter dependencies & version
+│   └── analysis_options.yaml           # Lint rules
+├── website/                           # Static landing page & release tracker
+│   ├── index.html                     # Responsive landing page
+│   ├── css/style.css                  # Dark-mode styling & animations
+│   ├── js/main.js                     # Dynamic releases & contact form
+│   ├── privacy.html / terms.html      # Legal pages
+│   └── Flowra-v1.2.0.apk             # Direct APK download
 ├── releases/                          # Release metadata
-│   └── releases.json                  # Release catalog, checksums, and changelog data
-├── test/                              # Unit & Widget test suite (100% passing, 51 tests)
-│   ├── models/                        # Data model serialization & logic tests
-│   ├── screens/                       # UI widget tests for all key screens
-│   ├── services/                      # Notification & database service tests
-│   ├── utils/                         # Formatter & helper tests
-│   ├── widgets/                       # Shared widget tests
-│   └── standalone_verification_test.dart # Standalone test suite
-├── tools/                             # Release automation CLI scripts
-│   ├── release.dart                   # Automated version bumper, builder & catalog sync
-│   ├── release.ps1                    # PowerShell helper wrapper
-│   └── release.sh                     # Bash helper wrapper
-└── website/                           # Lightweight static landing page & release tracker
-    ├── index.html                     # Responsive landing page with dynamic releases
-    ├── styles.css                     # Modern dark-mode styling & animations
-    ├── app.js                         # Dynamic releases.json parser & download handler
-    └── assets/                        # Web icons and favicon
+│   └── releases.json                  # Version catalog & checksums
+├── tools/                             # Release automation scripts
+│   ├── release.dart                   # Automated version bumper & builder
+│   ├── release.ps1                    # PowerShell helper
+│   └── release.sh                     # Bash helper
+├── CHANGELOG.md                       # Version history
+└── README.md                          # This file
 ```
 
 ---
@@ -238,33 +197,38 @@ Flowra/
 
 ### 1. Install Dependencies
 ```bash
+cd app
 flutter pub get
 ```
 
 ### 2. Run Tests
 ```bash
+cd app
 flutter test
 ```
 
 ### 3. Run on Connected Device / Emulator
 ```bash
+cd app
 flutter run
 ```
 
 ### 4. Build Release APK
 To generate a standalone APK:
 ```bash
+cd app
 flutter build apk --release
 ```
 The output APK file will be located at:
-`build/app/outputs/flutter-apk/app-release.apk`
+`app/build/app/outputs/flutter-apk/app-release.apk`
 
 ### 5. Build Android App Bundle (for Google Play Store)
 ```bash
+cd app
 flutter build appbundle --release
 ```
 The output AAB file will be located at:
-`build/app/outputs/bundle/release/app-release.aab`
+`app/build/app/outputs/bundle/release/app-release.aab`
 
 ---
 
@@ -322,14 +286,15 @@ Flowra adheres to strict static analysis and testing standards to maintain zero 
 
 ```bash
 # Verify static analysis across all files (zero warnings allowed)
-dart analyze --fatal-infos lib test
+cd app
+flutter analyze
 
-# Run the complete test suite (51/51 tests passing)
+# Run the complete test suite (52/52 tests passing)
 flutter test
 ```
 
 - **Static Analysis**: Configured with strict linting (`flutter_lints`), passing with 0 warnings and 0 errors.
-- **Test Coverage**: 51 comprehensive tests covering data models, providers, services, screens, widgets, and celebration animations.
+- **Test Coverage**: 52 comprehensive tests covering data models, providers, services, screens, widgets, and celebration animations.
 - **Offline Reliability**: Validated across device reboots and low-power states without network dependencies.
 
 ---
@@ -410,10 +375,5 @@ Driven by innovation and creativity, we aim to build technology that makes a dif
 ---
 
 ## 📄 License & Copyright Claim
-© 2026 Vexora Technology. Developed by Jay. All rights reserved.  
-This project is open-source under the [MIT License](LICENSE).
-
----
-
-## 📄 License
+© 2026 Vexora Technology. All rights reserved.  
 This project is open-source under the [MIT License](LICENSE).

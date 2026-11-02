@@ -7,7 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.2.0] - 2026-11-01
+## [1.2.0] - 2026-11-02
+
+### Added
+- **Study Lock Self-Discipline Fallback Mode**: When Android 13+ restricted settings prevent Usage Access or Accessibility permissions on sideloaded installs, Flowra now offers a Self-Discipline / Focus Timer mode instead of being non-functional.
+- **Restricted Settings Guidance**: Step-by-step instructions for users to enable restricted permissions via App Info → Allow Restricted Settings, with an "Open Flowra App Info" button.
+- **Auto-Recheck Permissions on Resume**: Study Lock screen now uses `WidgetsBindingObserver` to automatically recheck permissions when users return from system settings.
+- **Enforcement Mode Banner**: Clear visual indicator showing whether the app is in "Full Distraction Blocker" or "Self-Discipline" mode.
+- **Website Mobile Responsive Design**: Full responsive support for 320px, 375px, 768px, 1024px, and 1440px breakpoints with no horizontal overflow.
+- **Reduced Motion Support**: `prefers-reduced-motion` CSS media query for accessibility.
+- **Website `.env.example`**: Template for contact form configuration.
+
+### Changed
+- **Branding**: All references updated to "Vexora Technology" with "Lead Developer: Jay" preserved only in About Flowra descriptions. Copyright standardized to "© 2026 Vexora Technology. All rights reserved."
+- **Version Display**: Clean version name only (e.g., "Version 1.2.0") — build numbers no longer shown to users.
+- **Contact Form Email**: Suggestion submissions now routed to `magicianbusiness30@gmail.com`.
+- **Folder Structure**: Flutter app moved to `app/` subdirectory; website remains in `website/`. CI/CD workflows updated accordingly.
+- **CI/CD**: Updated `actions/setup-java` to v5, added `working-directory: app` to CI jobs, removed failing `java-kotlin` and `swift` CodeQL matrix entries, deploy-pages uses `peaceiris/actions-gh-pages@v4`.
+- **Onboarding**: Changed placeholder name from "Jay" to "Alex" in onboarding hint text.
+
+### Fixed
+- **Study Lock Permission Cards**: All permission descriptions now explain Android 13+ restricted settings behavior honestly.
+- **Website Horizontal Overflow**: Fixed CSS grid `minmax` causing overflow on small screens (320px).
+- **Website Mobile Menu**: Hamburger menu now works correctly at all breakpoints.
+- **CI Pipeline**: Fixed `flutter analyze` failure caused by unrecognized `unnecessary_import` lint rule.
+- **CodeQL Workflow**: Removed `java-kotlin` and `swift` autobuild entries that cannot build Flutter projects.
+
+---
 
 ### Added
 - **Exclusive Home Page Study Lock Dashboard**: Moved Study Lock exclusively to Home page with a live interactive status shield card, remaining countdown, and quick action launcher.
@@ -22,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.1.0] - 2026-10-14
+## [1.0.2] - 2026-10-14
 
 ### Added
 - **Study Lock — Distraction Blocker**:

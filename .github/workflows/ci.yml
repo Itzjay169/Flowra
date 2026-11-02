@@ -12,12 +12,15 @@ jobs:
   analyze_and_test:
     name: Code Analysis & Tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Set up Java Development Kit (JDK 17)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -43,12 +46,15 @@ jobs:
     name: Build Android Binaries (APK & AAB)
     needs: analyze_and_test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Set up Java Development Kit (JDK 17)
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -89,14 +95,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: flowra-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
 
       - name: Upload Release AAB Artifact
         uses: actions/upload-artifact@v4
         with:
           name: flowra-release-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          path: app/build/app/outputs/bundle/release/app-release.aab
           retention-days: 30
 
       - name: Prepare Named Release Assets
@@ -111,9 +117,9 @@ jobs:
         with:
           name: Flowra ${{ github.ref_name }}
           files: |
-            Flowra-${{ github.ref_name }}.apk
-            Flowra-${{ github.ref_name }}.aab
-            build/app/outputs/flutter-apk/app-release.apk
+            app/Flowra-${{ github.ref_name }}.apk
+            app/Flowra-${{ github.ref_name }}.aab
+            app/build/app/outputs/flutter-apk/app-release.apk
           generate_release_notes: true
           draft: false
           prerelease: false
