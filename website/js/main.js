@@ -374,6 +374,7 @@ function initSuggestionForm() {
   const alertSuccess = document.getElementById('formAlertSuccess');
   const alertError = document.getElementById('formAlertError');
   const fallbackActions = document.getElementById('fallbackActions');
+  const gmailFallbackBtn = document.getElementById('gmailFallbackBtn');
   const emailFallbackBtn = document.getElementById('emailFallbackBtn');
   const githubFallbackBtn = document.getElementById('githubFallbackBtn');
 
@@ -452,9 +453,13 @@ function initSuggestionForm() {
 
     const targetEmail = FlowraConfig.forms?.targetEmail || FlowraConfig.developer?.email || 'magicianbusiness30@gmail.com';
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
     try {
       const response = await fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
         method: 'POST',
+        signal: controller.signal,
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -467,10 +472,33 @@ function initSuggestionForm() {
           version: version,
           message: message,
           _replyto: email !== 'Not provided' ? email : targetEmail,
+          _captcha: 'false',
         })
       });
+      clearTimeout(timeoutId);
 
-      const result = await response.json();
+      let result = {};
+      try {
+        result = await response.json();
+      } catch (jsonErr) {
+        result = { message: 'Unexpected response from server' };
+      }
+
+      // Check for one-time FormSubmit activation notice
+      if (result.message && result.message.toLowerCase().includes('activat')) {
+        showElement(alertSuccess);
+        alertSuccess.innerHTML = `
+          <strong>📬 One-Time Activation Required for ${targetEmail}!</strong><br>
+          <div style="margin-top: 8px; font-size: 0.9em; line-height: 1.5;">
+            FormSubmit has sent an email with an <strong>'Activate Form'</strong> link to <strong>${targetEmail}</strong>.<br>
+            👉 <strong>Please open your inbox (or Spam folder) and click that link once.</strong><br>
+            Once activated, all future suggestions from this form will arrive directly in your inbox!
+          </div>
+        `;
+        showElement(fallbackActions);
+        return;
+      }
+
       if (response.ok && (result.success === 'true' || result.success === true || result.message?.toLowerCase().includes('success'))) {
         showElement(alertSuccess);
         alertSuccess.textContent = `Thank you! Your suggestion was sent successfully to ${targetEmail}. We appreciate your feedback!`;
@@ -481,11 +509,19 @@ function initSuggestionForm() {
         throw new Error(result.message || 'Submission failed');
       }
     } catch (err) {
+      clearTimeout(timeoutId);
+      const isTimeout = err.name === 'AbortError';
+      const reasonMsg = isTimeout
+        ? 'The delivery service took too long to respond.'
+        : (err.message && !err.message.includes('object') ? err.message : 'Network error or service unavailable.');
       console.warn('Form submission service error:', err);
       showElement(alertError);
       alertError.innerHTML = `
         <strong>Could not send automatically.</strong><br>
-        You can still send it directly to <strong>${targetEmail}</strong> using the buttons below:
+        <div style="font-size:0.9em; margin: 6px 0;">
+          <em>${reasonMsg}</em><br>
+          You can send your suggestion directly to <strong>${targetEmail}</strong> using Gmail or your email app below:
+        </div>
       `;
       showElement(fallbackActions);
     } finally {
@@ -495,20 +531,24 @@ function initSuggestionForm() {
   });
 
   function setupFallbacks(name, email, type, version, message) {
+    const targetEmail = FlowraConfig.forms?.targetEmail || FlowraConfig.developer?.email || 'magicianbusiness30@gmail.com';
+    const subject = `[Flowra ${type}] Suggestion from ${name} (v${version})`;
+    const body = `Name: ${name}\nEmail: ${email}\nVersion: ${version}\nType: ${type}\n\nMessage:\n${message}`;
+
+    if (gmailFallbackBtn) {
+      gmailFallbackBtn.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(targetEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
     if (emailFallbackBtn) {
-      const subject = encodeURIComponent(`[Flowra ${type}] Suggestion`);
-      const body = encodeURIComponent(
-        `Name: ${name}\nEmail: ${email}\nVersion: ${version}\nType: ${type}\n\nMessage:\n${message}`
-      );
-      emailFallbackBtn.href = `mailto:${FlowraConfig.developer.email}?subject=${subject}&body=${body}`;
+      emailFallbackBtn.href = `mailto:${targetEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     }
 
     if (githubFallbackBtn) {
       const title = encodeURIComponent(`[${type}] ${message.substring(0, 45)}...`);
-      const body = encodeURIComponent(
+      const ghBody = encodeURIComponent(
         `### Suggestion Details\n- **Type**: ${type}\n- **Version**: ${version}\n- **Submitted by**: ${name}\n\n### Description\n${message}`
       );
-      githubFallbackBtn.href = `${FlowraConfig.developer.githubIssuesUrl}?title=${title}&body=${body}`;
+      githubFallbackBtn.href = `${FlowraConfig.developer.githubIssuesUrl}?title=${title}&body=${ghBody}`;
     }
   }
 }
