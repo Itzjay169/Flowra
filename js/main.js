@@ -123,8 +123,8 @@ async function loadReleases() {
         releaseDate: "2026-11-02",
         title: "Flowra v1.2.0 — Study Lock Overhaul, Self-Discipline Mode & Vexora Technology Edition",
         apkFileName: "Flowra-v1.2.0.apk",
-        fileSizeMb: 62.0,
-        sha256: "c0d18e3916f58f40fd73b6159a025162c30cebfb2398cd70174b5a6341b3fa23",
+        fileSizeMb: 62.5,
+        sha256: "84a6ffedfcf69b6b05a084a1c8595a521d1a6b116da2712e39596823b296a422",
         downloadUrl: "Flowra-v1.2.0.apk",
         githubReleaseUrl: "https://github.com/Itzjay169/Flowra",
         changes: {
